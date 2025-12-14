@@ -99,6 +99,22 @@ class SocketClient {
             }
         });
 
+        this.socket.on('macro:get_screenshot', async () => {
+            if (this.handlers.onGetScreenshot) {
+                try {
+                    const image = await this.handlers.onGetScreenshot();
+                    if (image) {
+                        this.socket.emit('macro:screenshot', {
+                            serverId: this.serverId,
+                            image
+                        });
+                    }
+                } catch (err) {
+                    this.sendLog(`Ekran görüntüsü hatası: ${err.message}`, 'error');
+                }
+            }
+        });
+
         // ------------------------
 
         this.socket.on('connect_error', (error) => {

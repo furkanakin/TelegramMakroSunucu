@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, globalShortcut, screen } = require('electron');
 const path = require('path');
-const fs = require('fs');
+const { exec } = require('child_process');
 
 // Veritabanı ve otomasyon modülleri
 const DatabaseManager = require('../database/schema');
@@ -89,6 +89,15 @@ async function initDatabase() {
                 case 'resume':
                     automation.resume();
                     break;
+                case 'kill_telegram':
+                    exec('taskkill /F /IM telegram.exe /T', (error, stdout, stderr) => {
+                        if (error) {
+                            socketClient.sendLog(`Telegram kapatma hatası: ${error.message}`, 'error');
+                        } else {
+                            socketClient.sendLog('Telegram processleri sonlandırıldı.', 'success');
+                        }
+                    });
+                    break;
                 case 'clear_channels': // New command
                     try {
                         db.deleteAllChannels();
@@ -131,12 +140,39 @@ async function initDatabase() {
                 console.error("Details error", e);
                 return {};
             }
+        },
+        onGetScreenshot: async () => {
+            try {
+                const { desktopCapturer } = require('electron');
+                const screenSize = screen.getPrimaryDisplay().size;
+                const sources = await desktopCapturer.getSources({
+                    types: ['screen'],
+                    thumbnailSize: screenSize
+                });
+                if (sources.length > 0) {
+                    // Reduce quality slightly for network performance if using JPEG
+                    // But toDataURL() defaults to PNG. PNG is big.
+                    // toJPEG(quality) returns Buffer. We want Base64.
+                    const buffer = sources[0].thumbnail.toJPEG(60);
+                    return `data:image/jpeg;base64,${buffer.toString('base64')}`;
+                }
+                return null;
+            } catch (e) {
+                console.error("Screenshot error", e);
+                return null;
+            }
         }
     });
 }
 
 // App hazır olduğunda
 app.whenReady().then(async () => {
+    app.setLoginItemSettings({
+        openAtLogin: true,
+        path: process.execPath,
+        args: ['--hidden'] // Optional: start hidden if desired, but user didn't ask. Just ensure it starts.
+    });
+
     await initDatabase();
     createWindow();
 
