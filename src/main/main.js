@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, globalShortcut, screen } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const { exec } = require('child_process');
 
 // Veritabanı ve otomasyon modülleri
