@@ -121,6 +121,13 @@ async function initDatabase() {
                         socketClient.sendLog('Hesap silindi.', 'warning');
                     }
                     break;
+                case 'minimize_all':
+                    // Automation engine is available in scope
+                    if (automation && automation.engine) {
+                        await automation.engine.runPowerShell('(New-Object -ComObject Shell.Application).MinimizeAll()');
+                        socketClient.sendLog('Masaüstü gösterildi.', 'info');
+                    }
+                    break;
                 default:
                     throw new Error('Bilinmeyen komut');
             }
@@ -219,6 +226,10 @@ async function initDatabase() {
             if (data.type === 'click') {
                 if (automation && automation.engine) {
                     await automation.engine.performRemoteClick(data.x, data.y);
+                }
+            } else if (data.type === 'keydown') {
+                if (automation && automation.engine) {
+                    await automation.engine.performRemoteKey(data.key);
                 }
             }
         }

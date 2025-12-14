@@ -92,6 +92,45 @@ class AutomationEngine {
         `);
     }
 
+    async performRemoteKey(key) {
+        // Map keys to SendKeys format
+        const map = {
+            'Enter': '{ENTER}',
+            'Backspace': '{BS}',
+            'Delete': '{DEL}',
+            'Escape': '{ESC}',
+            'ArrowUp': '{UP}',
+            'ArrowDown': '{DOWN}',
+            'ArrowLeft': '{LEFT}',
+            'ArrowRight': '{RIGHT}',
+            'Tab': '{TAB}',
+            'Home': '{HOME}',
+            'End': '{END}',
+            'PageUp': '{PGUP}',
+            'PageDown': '{PGDN}',
+            'Space': ' '
+        };
+
+        let sendKey = map[key];
+        if (!sendKey) {
+            if (key.length === 1) {
+                // Escape special chars for SendKeys
+                if ("+^%~{}[]".includes(key)) {
+                    sendKey = `{${key}}`;
+                } else {
+                    sendKey = key;
+                }
+            }
+        }
+
+        if (sendKey) {
+            await this.runPowerShell(`
+                Add-Type -AssemblyName System.Windows.Forms
+                [System.Windows.Forms.SendKeys]::SendWait('${sendKey}')
+            `);
+        }
+    }
+
     // PowerShell komutu çalıştır (Base64 encoded)
     runPowerShell(script) {
         return new Promise((resolve, reject) => {
