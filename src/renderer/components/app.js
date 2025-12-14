@@ -89,7 +89,7 @@ function showToast(message, type = 'info', duration = 5000) {
 }
 
 // Kopyalama fonksiyonu
-window.copyToastMessage = function(btn) {
+window.copyToastMessage = function (btn) {
     const message = btn.parentElement.querySelector('.toast-message').textContent;
     navigator.clipboard.writeText(message).then(() => {
         btn.innerHTML = '<i class="fas fa-check"></i>';
@@ -2327,11 +2327,11 @@ function renderHistoryTable(history) {
 
     tbody.innerHTML = history.map(item => {
         const statusClass = item.status === 'success' ? 'success' :
-                           item.status === 'failed' ? 'danger' :
-                           item.status === 'sent' ? 'info' : 'warning';
+            item.status === 'failed' ? 'danger' :
+                item.status === 'sent' ? 'info' : 'warning';
         const statusText = item.status === 'success' ? 'Basarili' :
-                          item.status === 'failed' ? 'Basarisiz' :
-                          item.status === 'sent' ? 'Gonderildi' : 'Beklemede';
+            item.status === 'failed' ? 'Basarisiz' :
+                item.status === 'sent' ? 'Gonderildi' : 'Beklemede';
 
         return `
             <tr>
@@ -2440,6 +2440,9 @@ async function loadSettings() {
     if (settings.telegramLaunchDelay !== undefined) {
         $('#telegram-launch-delay').value = settings.telegramLaunchDelay;
     }
+    if (settings.manager_url !== undefined) {
+        $('#manager-url').value = settings.manager_url;
+    }
     if (settings.keepScreenAlive !== undefined) {
         $('#keep-screen-alive').checked = settings.keepScreenAlive;
     }
@@ -2452,6 +2455,15 @@ async function loadSettings() {
             const key = id.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
             await ipcRenderer.invoke('set-setting', { key, value: parseFloat(e.target.value) });
         });
+    });
+
+    // Manager URL handler
+    $('#manager-url').addEventListener('change', async (e) => {
+        const value = e.target.value.trim();
+        if (value) {
+            await ipcRenderer.invoke('set-setting', { key: 'manager_url', value });
+            showSuccess('Yönetici sunucu adresi güncellendi ve bağlantı yenilendi.');
+        }
     });
 
     ['keep-screen-alive', 'prevent-sleep'].forEach(id => {
