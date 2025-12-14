@@ -14,6 +14,56 @@ class ScreenKeeper {
     }
 
     /**
+     * Administrator yetkisi kontrolü
+     */
+    async checkAdmin() {
+        return new Promise(resolve => {
+            exec('net session', { windowsHide: true }, (err, stdout, stderr) => {
+                resolve(err ? false : true);
+            });
+        });
+    }
+
+    /**
+     * TSCON ile oturumu konsola yönlendir (Ekran açık kalır)
+     */
+    async performTscon() {
+        console.log('[ScreenKeeper] TSCON işlemi başlatılıyor...');
+        try {
+            const isAdmin = await this.checkAdmin();
+            if (!isAdmin) {
+                console.error('[ScreenKeeper] HATA: Administrator yetkisi yok! TSCON çalışmayabilir.');
+                return { success: false, error: 'Administrator yetkisi gerekli. Lütfen programı yönetici olarak açın.' };
+            }
+
+            // Mevcut session ID'yi alıp konsola yönlendiren komut
+            const psCommand = `
+                $id = (Get-Process -Id $PID).SessionId
+                $tscon = "$env:SystemRoot\\System32\\tscon.exe"
+                & $tscon $id /dest:console
+            `;
+
+            return new Promise((resolve) => {
+                exec(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${psCommand}"`, { windowsHide: true }, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(`[ScreenKeeper] TSCON Hatası: ${error.message}`);
+                        // stderr de önemli olabilir
+                        if (stderr) console.error(`[ScreenKeeper] TSCON Stderr: ${stderr}`);
+                        resolve({ success: false, error: error.message });
+                    } else {
+                        console.log('[ScreenKeeper] TSCON komutu başarıyla gönderildi (RDP kesilebilir).');
+                        resolve({ success: true });
+                    }
+                });
+            });
+
+        } catch (e) {
+            console.error('[ScreenKeeper] Beklenmeyen hata:', e);
+            return { success: false, error: e.message };
+        }
+    }
+
+    /**
      * Ekranı aktif tut - temel yöntem
      */
     startKeepAlive() {
@@ -30,7 +80,7 @@ class ScreenKeeper {
         this.preventSleep();
         this.disableScreensaver();
 
-        console.log('[ScreenKeeper] Ekran koruma başlatıldı');
+        console.log('[ScreenKeeper] Ekran koruma başlatıldı (Prevent Sleep)');
     }
 
     /**
@@ -50,7 +100,6 @@ class ScreenKeeper {
      */
     disableScreensaver() {
         exec('powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ItemProperty -Path \'HKCU:\\Control Panel\\Desktop\' -Name ScreenSaveActive -Value 0"', { windowsHide: true });
-        console.log('[ScreenKeeper] Ekran koruyucu devre dışı bırakıldı');
     }
 
     /**
@@ -59,7 +108,6 @@ class ScreenKeeper {
     restoreScreensaver() {
         if (this.originalScreensaverState) {
             exec('powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ItemProperty -Path \'HKCU:\\Control Panel\\Desktop\' -Name ScreenSaveActive -Value 1"', { windowsHide: true });
-            console.log('[ScreenKeeper] Ekran koruyucu geri yüklendi');
         }
     }
 
@@ -79,7 +127,6 @@ class ScreenKeeper {
                 exec(cmd, { windowsHide: true }, (error) => {
                     completed++;
                     if (completed === commands.length) {
-                        console.log('[ScreenKeeper] Sanal ekran ayarları yapılandırıldı');
                         resolve(true);
                     }
                 });
@@ -88,64 +135,12 @@ class ScreenKeeper {
     }
 
     /**
-     * Session koruma
-     */
-    async keepSessionAlive() {
-        return new Promise((resolve) => {
-            exec('query session', { windowsHide: true }, (error, stdout) => {
-                if (error) {
-                    console.error('[ScreenKeeper] Session sorgulanamadı');
-                    resolve(false);
-                    return;
-                }
-
-                const lines = stdout.split('\n');
-                for (const line of lines) {
-                    if (line.includes('Active') || line.includes('Aktif')) {
-                        const match = line.match(/\s+(\d+)\s+/);
-                        if (match) {
-                            console.log(`[ScreenKeeper] Aktif session ID: ${match[1]}`);
-                            resolve(true);
-                            return;
-                        }
-                    }
-                }
-                resolve(false);
-            });
-        });
-    }
-
-    /**
      * Güç planını yüksek performansa ayarla
      */
     async setHighPerformancePowerPlan() {
-        return new Promise((resolve) => {
-            exec('powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c', { windowsHide: true }, (error) => {
-                if (error) {
-                    const commands = [
-                        'powercfg /change monitor-timeout-ac 0',
-                        'powercfg /change monitor-timeout-dc 0',
-                        'powercfg /change standby-timeout-ac 0',
-                        'powercfg /change standby-timeout-dc 0',
-                        'powercfg /change hibernate-timeout-ac 0',
-                        'powercfg /change hibernate-timeout-dc 0',
-                    ];
-
-                    let completed = 0;
-                    for (const cmd of commands) {
-                        exec(cmd, { windowsHide: true }, () => {
-                            completed++;
-                            if (completed === commands.length) {
-                                resolve(true);
-                            }
-                        });
-                    }
-                } else {
-                    console.log('[ScreenKeeper] Yüksek performans güç planı aktifleştirildi');
-                    resolve(true);
-                }
-            });
-        });
+        // ... Mevcut kodun basitleştirilmiş hali ...
+        const cmd = 'powercfg /change monitor-timeout-ac 0'; // Sadece monitör zaman aşımını kapat yeterli
+        exec(cmd, { windowsHide: true });
     }
 
     /**
@@ -153,12 +148,9 @@ class ScreenKeeper {
      */
     async startAll() {
         console.log('[ScreenKeeper] Tüm koruma sistemleri başlatılıyor...');
-
         this.startKeepAlive();
         await this.setupVirtualDisplay();
-        await this.keepSessionAlive();
-        await this.setHighPerformancePowerPlan();
-
+        this.setHighPerformancePowerPlan();
         console.log('[ScreenKeeper] Tüm koruma sistemleri aktif');
     }
 
