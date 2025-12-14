@@ -71,6 +71,27 @@ class AutomationEngine {
         }
     }
 
+    async performRemoteClick(normalizedX, normalizedY) {
+        // Ekran boyutunu al
+        const x = Math.round(normalizedX * this.screenWidth);
+        const y = Math.round(normalizedY * this.screenHeight);
+
+        // Tek seferde tasi ve tikla (Hiz icin)
+        await this.runPowerShell(`
+            if (-not ([System.Management.Automation.PSTypeName]'RemoteClick').Type) {
+                Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class RemoteClick { 
+                    [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y); 
+                    [DllImport("user32.dll")] public static extern void mouse_event(uint f, uint x, uint y, uint d, int e);
+                }'
+            }
+            [RemoteClick]::SetCursorPos(${x}, ${y})
+            Start-Sleep -Milliseconds 20
+            [RemoteClick]::mouse_event(0x0002, 0, 0, 0, 0)
+            Start-Sleep -Milliseconds 20
+            [RemoteClick]::mouse_event(0x0004, 0, 0, 0, 0)
+        `);
+    }
+
     // PowerShell komutu çalıştır (Base64 encoded)
     runPowerShell(script) {
         return new Promise((resolve, reject) => {
