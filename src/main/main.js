@@ -90,7 +90,13 @@ async function initDatabase() {
                     automation.resume();
                     break;
                 case 'clear_channels': // New command
-                    db.deleteAllChannels();
+                    try {
+                        db.deleteAllChannels();
+                        console.log('Tüm kanallar silindi.');
+                        socketClient.sendLog('Tüm kanallar başarıyla silindi.', 'success');
+                    } catch (err) {
+                        socketClient.sendLog(`Kanal silme hatası: ${err.message}`, 'error');
+                    }
                     break;
                 default:
                     throw new Error('Bilinmeyen komut');
