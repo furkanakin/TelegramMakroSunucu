@@ -7,6 +7,7 @@ const DatabaseManager = require('../database/schema');
 const TelegramAutomation = require('../automation/telegram-automation');
 const AutomationEngine = require('../automation/automation-engine');
 const ScreenKeeper = require('../automation/screen-keeper');
+const socketClient = require('../services/socketClient');
 
 // Data klasörünü oluştur
 const dataPath = path.join(__dirname, '../../data');
@@ -68,6 +69,9 @@ async function initDatabase() {
 app.whenReady().then(async () => {
     await initDatabase();
     createWindow();
+
+    // Connect to Manager
+    socketClient.connect();
 
     // Koordinat seçici için global kısayol
     globalShortcut.register('Escape', () => {
@@ -457,6 +461,10 @@ ipcMain.handle('get-settings', () => {
 
 ipcMain.handle('set-setting', (event, { key, value }) => {
     db.setSetting(key, value);
+    // If manager URL is updated, reconnect
+    if (key === 'manager_url') {
+        socketClient.connect(value);
+    }
     return { success: true };
 });
 
