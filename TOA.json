@@ -1,0 +1,1580 @@
+{
+  "version": "1.0",
+  "exportDate": "2025-12-14T18:20:28.935Z",
+  "workflow": {
+    "name": "TOA",
+    "description": "",
+    "nodes": [
+      {
+        "id": "node_1",
+        "type": "launchProgram",
+        "position": {
+          "x": 300,
+          "y": 50
+        },
+        "data": {
+          "exePath": "",
+          "useDynamic": true,
+          "waitAfterLaunch": 3,
+          "delayBefore": 0,
+          "delayAfter": 0,
+          "color": ""
+        }
+      },
+      {
+        "id": "node_2",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 150
+        },
+        "data": {
+          "x": 41,
+          "y": 53,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "color": "#6b7280",
+          "label": "1 - Menü"
+        }
+      },
+      {
+        "id": "node_3",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 250
+        },
+        "data": {
+          "x": 90,
+          "y": 398,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "color": "#6b7280",
+          "label": "2 - Kayıtlı Mesajlar"
+        }
+      },
+      {
+        "id": "node_4",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 350
+        },
+        "data": {
+          "x": 1896,
+          "y": 50,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "color": "#6b7280",
+          "label": "3 - Sağ Menü"
+        }
+      },
+      {
+        "id": "node_5",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 450
+        },
+        "data": {
+          "x": 1758,
+          "y": 229,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "color": "#6b7280",
+          "label": "4- Sohbeti Sil"
+        }
+      },
+      {
+        "id": "node_6",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 550
+        },
+        "data": {
+          "x": 1087,
+          "y": 615,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "5- Sil Butonu",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_7",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 650
+        },
+        "data": {
+          "x": 41,
+          "y": 53,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "6- Menü",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_8",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 750
+        },
+        "data": {
+          "x": 90,
+          "y": 398,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "7- Kayıtlı Mesajlar",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_9",
+        "type": "pasteChannelLinks",
+        "position": {
+          "x": 287,
+          "y": 857
+        },
+        "data": {
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "8 - Kanal Linklerini Yapıştır",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_10",
+        "type": "keyPress",
+        "position": {
+          "x": 300,
+          "y": 950
+        },
+        "data": {
+          "key": "ENTER",
+          "delayBefore": 0,
+          "delayAfter": 0.3,
+          "label": "9 - Enter",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_11",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 1050
+        },
+        "data": {
+          "x": 213,
+          "y": 727,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 1. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_12",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 1150
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_13",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 1250
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_14",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 1350
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_15",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 1450
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_19",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 1550
+        },
+        "data": {
+          "x": 212,
+          "y": 744,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 2. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_24",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 2050
+        },
+        "data": {
+          "x": 212,
+          "y": 762,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 3. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_29",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 2550
+        },
+        "data": {
+          "x": 213,
+          "y": 782,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 4. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_34",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 3050
+        },
+        "data": {
+          "x": 213,
+          "y": 799,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 5. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_39",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 3550
+        },
+        "data": {
+          "x": 212,
+          "y": 815,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 6. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_49",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 1650
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_50",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 1750
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_51",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 1850
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_52",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 1950
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_53",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 2150
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_54",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 2250
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_55",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 2350
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_56",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 2450
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_57",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 2650
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_58",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 2750
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_59",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 2850
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_60",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 2950
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_61",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 3150
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_62",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 3250
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_63",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 3350
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_64",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 3450
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_65",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 3650
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_66",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 3750
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_67",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 3850
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_68",
+        "type": "mouseClick",
+        "position": {
+          "x": 300,
+          "y": 3950
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_69",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 4061
+        },
+        "data": {
+          "x": 212,
+          "y": 834,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 7. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_70",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 4161
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_71",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 4261
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_72",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 4361
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_73",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 4461
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_74",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 4572
+        },
+        "data": {
+          "x": 205,
+          "y": 887,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 8. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_75",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 4673
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_76",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 4772
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_77",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 4872
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_78",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 4972
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_79",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 5089.777777777777
+        },
+        "data": {
+          "x": 208,
+          "y": 904,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 9. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_80",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 5190.777777777777
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_81",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 5289.777777777777
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_82",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 5389.777777777777
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_83",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 5489.777777777777
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_84",
+        "type": "mouseClick",
+        "position": {
+          "x": 298,
+          "y": 5605.333333333333
+        },
+        "data": {
+          "x": 208,
+          "y": 921,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 10. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_85",
+        "type": "mouseClick",
+        "position": {
+          "x": 299.1111111111111,
+          "y": 5706.333333333333
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_86",
+        "type": "mouseClick",
+        "position": {
+          "x": 299.1111111111111,
+          "y": 5805.333333333333
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_87",
+        "type": "mouseClick",
+        "position": {
+          "x": 299.1111111111111,
+          "y": 5905.333333333333
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_88",
+        "type": "mouseClick",
+        "position": {
+          "x": 299.1111111111111,
+          "y": 6005.333333333333
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_89",
+        "type": "mouseClick",
+        "position": {
+          "x": 299.1111111111111,
+          "y": 6119.777777777777
+        },
+        "data": {
+          "x": 202,
+          "y": 943,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 11. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_90",
+        "type": "mouseClick",
+        "position": {
+          "x": 300.2222222222222,
+          "y": 6220.777777777777
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_91",
+        "type": "mouseClick",
+        "position": {
+          "x": 300.2222222222222,
+          "y": 6319.777777777777
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_92",
+        "type": "mouseClick",
+        "position": {
+          "x": 300.2222222222222,
+          "y": 6419.777777777777
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_93",
+        "type": "mouseClick",
+        "position": {
+          "x": 300.2222222222222,
+          "y": 6519.777777777777
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_94",
+        "type": "mouseClick",
+        "position": {
+          "x": 300.2222222222222,
+          "y": 6632
+        },
+        "data": {
+          "x": 203,
+          "y": 959,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10 - 12. Link",
+          "color": "#22c55e"
+        }
+      },
+      {
+        "id": "node_95",
+        "type": "mouseClick",
+        "position": {
+          "x": 301.33333333333326,
+          "y": 6733
+        },
+        "data": {
+          "x": 1065,
+          "y": 652,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 1. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_96",
+        "type": "mouseClick",
+        "position": {
+          "x": 301.33333333333326,
+          "y": 6832
+        },
+        "data": {
+          "x": 1069,
+          "y": 678,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 2. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_97",
+        "type": "mouseClick",
+        "position": {
+          "x": 301.33333333333326,
+          "y": 6932
+        },
+        "data": {
+          "x": 1065,
+          "y": 687,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 3. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_98",
+        "type": "mouseClick",
+        "position": {
+          "x": 301.33333333333326,
+          "y": 7032
+        },
+        "data": {
+          "x": 1064,
+          "y": 696,
+          "button": "left",
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "10) - 4. Katıl",
+          "color": "#6b7280"
+        }
+      },
+      {
+        "id": "node_99",
+        "type": "delay",
+        "position": {
+          "x": 302.11111111111114,
+          "y": 7143.7777777777765
+        },
+        "data": {
+          "duration": 1,
+          "label": "",
+          "color": ""
+        }
+      },
+      {
+        "id": "node_100",
+        "type": "closeProgram",
+        "position": {
+          "x": 302.22222222222223,
+          "y": 7280.333333333334
+        },
+        "data": {
+          "processName": "Telegram.exe",
+          "usePid": true,
+          "delayBefore": 0,
+          "delayAfter": 0.5,
+          "label": "",
+          "color": ""
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_node_1_node_2",
+        "source": "node_1",
+        "target": "node_2"
+      },
+      {
+        "id": "edge_node_2_node_3",
+        "source": "node_2",
+        "target": "node_3"
+      },
+      {
+        "id": "edge_node_3_node_4",
+        "source": "node_3",
+        "target": "node_4"
+      },
+      {
+        "id": "edge_node_4_node_5",
+        "source": "node_4",
+        "target": "node_5"
+      },
+      {
+        "id": "edge_node_5_node_6",
+        "source": "node_5",
+        "target": "node_6"
+      },
+      {
+        "id": "edge_node_6_node_7",
+        "source": "node_6",
+        "target": "node_7"
+      },
+      {
+        "id": "edge_node_7_node_8",
+        "source": "node_7",
+        "target": "node_8"
+      },
+      {
+        "id": "edge_node_8_node_9",
+        "source": "node_8",
+        "target": "node_9"
+      },
+      {
+        "id": "edge_node_9_node_10",
+        "source": "node_9",
+        "target": "node_10"
+      },
+      {
+        "id": "edge_node_10_node_11",
+        "source": "node_10",
+        "target": "node_11"
+      },
+      {
+        "id": "edge_node_11_node_12",
+        "source": "node_11",
+        "target": "node_12"
+      },
+      {
+        "id": "edge_node_12_node_13",
+        "source": "node_12",
+        "target": "node_13"
+      },
+      {
+        "id": "edge_node_13_node_14",
+        "source": "node_13",
+        "target": "node_14"
+      },
+      {
+        "id": "edge_node_14_node_15",
+        "source": "node_14",
+        "target": "node_15"
+      },
+      {
+        "id": "edge_node_15_node_19",
+        "source": "node_15",
+        "target": "node_19"
+      },
+      {
+        "id": "edge_node_19_node_49",
+        "source": "node_19",
+        "target": "node_49"
+      },
+      {
+        "id": "edge_node_49_node_50",
+        "source": "node_49",
+        "target": "node_50"
+      },
+      {
+        "id": "edge_node_50_node_51",
+        "source": "node_50",
+        "target": "node_51"
+      },
+      {
+        "id": "edge_node_51_node_52",
+        "source": "node_51",
+        "target": "node_52"
+      },
+      {
+        "id": "edge_node_52_node_24",
+        "source": "node_52",
+        "target": "node_24"
+      },
+      {
+        "id": "edge_node_24_node_53",
+        "source": "node_24",
+        "target": "node_53"
+      },
+      {
+        "id": "edge_node_53_node_54",
+        "source": "node_53",
+        "target": "node_54"
+      },
+      {
+        "id": "edge_node_54_node_55",
+        "source": "node_54",
+        "target": "node_55"
+      },
+      {
+        "id": "edge_node_55_node_56",
+        "source": "node_55",
+        "target": "node_56"
+      },
+      {
+        "id": "edge_node_56_node_29",
+        "source": "node_56",
+        "target": "node_29"
+      },
+      {
+        "id": "edge_node_29_node_57",
+        "source": "node_29",
+        "target": "node_57"
+      },
+      {
+        "id": "edge_node_57_node_58",
+        "source": "node_57",
+        "target": "node_58"
+      },
+      {
+        "id": "edge_node_58_node_59",
+        "source": "node_58",
+        "target": "node_59"
+      },
+      {
+        "id": "edge_node_59_node_60",
+        "source": "node_59",
+        "target": "node_60"
+      },
+      {
+        "id": "edge_node_60_node_34",
+        "source": "node_60",
+        "target": "node_34"
+      },
+      {
+        "id": "edge_node_34_node_61",
+        "source": "node_34",
+        "target": "node_61"
+      },
+      {
+        "id": "edge_node_61_node_62",
+        "source": "node_61",
+        "target": "node_62"
+      },
+      {
+        "id": "edge_node_62_node_63",
+        "source": "node_62",
+        "target": "node_63"
+      },
+      {
+        "id": "edge_node_63_node_64",
+        "source": "node_63",
+        "target": "node_64"
+      },
+      {
+        "id": "edge_node_64_node_39",
+        "source": "node_64",
+        "target": "node_39"
+      },
+      {
+        "id": "edge_node_39_node_65",
+        "source": "node_39",
+        "target": "node_65"
+      },
+      {
+        "id": "edge_node_65_node_66",
+        "source": "node_65",
+        "target": "node_66"
+      },
+      {
+        "id": "edge_node_66_node_67",
+        "source": "node_66",
+        "target": "node_67"
+      },
+      {
+        "id": "edge_node_67_node_68",
+        "source": "node_67",
+        "target": "node_68"
+      },
+      {
+        "id": "edge_node_68_node_69",
+        "source": "node_68",
+        "target": "node_69"
+      },
+      {
+        "id": "edge_node_69_node_70",
+        "source": "node_69",
+        "target": "node_70"
+      },
+      {
+        "id": "edge_node_70_node_71",
+        "source": "node_70",
+        "target": "node_71"
+      },
+      {
+        "id": "edge_node_71_node_72",
+        "source": "node_71",
+        "target": "node_72"
+      },
+      {
+        "id": "edge_node_72_node_73",
+        "source": "node_72",
+        "target": "node_73"
+      },
+      {
+        "id": "edge_node_73_node_74",
+        "source": "node_73",
+        "target": "node_74"
+      },
+      {
+        "id": "edge_node_74_node_75",
+        "source": "node_74",
+        "target": "node_75"
+      },
+      {
+        "id": "edge_node_75_node_76",
+        "source": "node_75",
+        "target": "node_76"
+      },
+      {
+        "id": "edge_node_76_node_77",
+        "source": "node_76",
+        "target": "node_77"
+      },
+      {
+        "id": "edge_node_77_node_78",
+        "source": "node_77",
+        "target": "node_78"
+      },
+      {
+        "id": "edge_node_78_node_79",
+        "source": "node_78",
+        "target": "node_79"
+      },
+      {
+        "id": "edge_node_79_node_80",
+        "source": "node_79",
+        "target": "node_80"
+      },
+      {
+        "id": "edge_node_80_node_81",
+        "source": "node_80",
+        "target": "node_81"
+      },
+      {
+        "id": "edge_node_81_node_82",
+        "source": "node_81",
+        "target": "node_82"
+      },
+      {
+        "id": "edge_node_82_node_83",
+        "source": "node_82",
+        "target": "node_83"
+      },
+      {
+        "id": "edge_node_83_node_84",
+        "source": "node_83",
+        "target": "node_84"
+      },
+      {
+        "id": "edge_node_84_node_85",
+        "source": "node_84",
+        "target": "node_85"
+      },
+      {
+        "id": "edge_node_85_node_86",
+        "source": "node_85",
+        "target": "node_86"
+      },
+      {
+        "id": "edge_node_86_node_87",
+        "source": "node_86",
+        "target": "node_87"
+      },
+      {
+        "id": "edge_node_87_node_88",
+        "source": "node_87",
+        "target": "node_88"
+      },
+      {
+        "id": "edge_node_88_node_89",
+        "source": "node_88",
+        "target": "node_89"
+      },
+      {
+        "id": "edge_node_89_node_90",
+        "source": "node_89",
+        "target": "node_90"
+      },
+      {
+        "id": "edge_node_90_node_91",
+        "source": "node_90",
+        "target": "node_91"
+      },
+      {
+        "id": "edge_node_91_node_92",
+        "source": "node_91",
+        "target": "node_92"
+      },
+      {
+        "id": "edge_node_92_node_93",
+        "source": "node_92",
+        "target": "node_93"
+      },
+      {
+        "id": "edge_node_93_node_94",
+        "source": "node_93",
+        "target": "node_94"
+      },
+      {
+        "id": "edge_node_94_node_95",
+        "source": "node_94",
+        "target": "node_95"
+      },
+      {
+        "id": "edge_node_95_node_96",
+        "source": "node_95",
+        "target": "node_96"
+      },
+      {
+        "id": "edge_node_96_node_97",
+        "source": "node_96",
+        "target": "node_97"
+      },
+      {
+        "id": "edge_node_97_node_98",
+        "source": "node_97",
+        "target": "node_98"
+      },
+      {
+        "id": "edge_node_98_node_99",
+        "source": "node_98",
+        "target": "node_99"
+      },
+      {
+        "id": "edge_node_99_node_100",
+        "source": "node_99",
+        "target": "node_100"
+      }
+    ]
+  }
+}

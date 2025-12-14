@@ -57,6 +57,49 @@ async function initDatabase() {
     db = new DatabaseManager(path.join(dataPath, 'telegram_automation.db'));
     await db.init();
 
+    try {
+        const toaPath = path.join(__dirname, '../../TOA.json');
+        if (fs.existsSync(toaPath)) {
+            console.log('Found TOA.json, checking for import...');
+            const toaContent = fs.readFileSync(toaPath, 'utf8');
+            const toaData = JSON.parse(toaContent);
+
+            // Handle structure { workflow: { ... } } or direct { nodes: ... }
+            const wfData = toaData.workflow || toaData;
+            const nodes = wfData.nodes || [];
+            const edges = wfData.edges || [];
+            const name = wfData.name || "TOA";
+            const desc = wfData.description || "Auto Imported Default Workflow";
+
+            if (nodes.length > 0) {
+                // Check if already exists
+                const workflows = db.getWorkflows();
+                const existing = workflows.find(w => w.name === name);
+
+                let wfId;
+                if (existing) {
+                    try {
+                        // Update existing logic
+                        console.log(`Updating existing default workflow: ${name}`);
+                        db.updateWorkflow(existing.id, nodes, edges);
+                        // Ensure it is default
+                        db.setDefaultWorkflow(existing.id);
+                        wfId = existing.id;
+                    } catch (e) {
+                        console.error('Error updating workflow:', e);
+                    }
+                } else {
+                    console.log(`Importing new default workflow: ${name}`);
+                    wfId = db.saveWorkflow(name, nodes, edges, desc);
+                    db.setDefaultWorkflow(wfId);
+                }
+                console.log(`Default workflow set to ID: ${wfId}`);
+            }
+        }
+    } catch (err) {
+        console.error('Error auto-importing TOA.json:', err);
+    }
+
     automation = new TelegramAutomation(db);
 
     // Otomasyon eventlerini UI'a ilet
