@@ -37,21 +37,24 @@ class ScreenKeeper {
             }
 
             // Mevcut session ID'yi alıp konsola yönlendiren komut
+            // Start-Process kullanarak detached çalıştırıyoruz
             const psCommand = `
                 $id = (Get-Process -Id $PID).SessionId
+                Write-Output "Bulunan Session ID: $id"
                 $tscon = "$env:SystemRoot\\System32\\tscon.exe"
-                & $tscon $id /dest:console
+                Start-Process -FilePath $tscon -ArgumentList "$id /dest:console" -WindowStyle Hidden
             `;
 
             return new Promise((resolve) => {
                 exec(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${psCommand}"`, { windowsHide: true }, (error, stdout, stderr) => {
+                    if (stdout) console.log(`[ScreenKeeper] ${stdout.trim()}`);
+
                     if (error) {
                         console.error(`[ScreenKeeper] TSCON Hatası: ${error.message}`);
-                        // stderr de önemli olabilir
                         if (stderr) console.error(`[ScreenKeeper] TSCON Stderr: ${stderr}`);
                         resolve({ success: false, error: error.message });
                     } else {
-                        console.log('[ScreenKeeper] TSCON komutu başarıyla gönderildi (RDP kesilebilir).');
+                        console.log('[ScreenKeeper] TSCON komutu tetiklendi.');
                         resolve({ success: true });
                     }
                 });
