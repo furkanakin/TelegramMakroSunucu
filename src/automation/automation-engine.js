@@ -92,6 +92,37 @@ class AutomationEngine {
         `);
     }
 
+    async performRemoteRightClick(normalizedX, normalizedY) {
+        const x = Math.round(normalizedX * this.screenWidth);
+        const y = Math.round(normalizedY * this.screenHeight);
+
+        await this.runPowerShell(`
+        if (-not ([System.Management.Automation.PSTypeName]'RemoteClick').Type) {
+            Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class RemoteClick { 
+                [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y); 
+                [DllImport("user32.dll")] public static extern void mouse_event(uint f, uint x, uint y, uint d, int e);
+            }'
+        }
+        [RemoteClick]::SetCursorPos(${x}, ${y})
+        [RemoteClick]::mouse_event(8, 0, 0, 0, 0)
+        [RemoteClick]::mouse_event(16, 0, 0, 0, 0)
+        `);
+    }
+
+    async performRemoteScroll(delta) {
+        // Web deltaY > 0 is scroll down. Win32 wheel negative is scroll down (towards user).
+        const scrollAmount = delta > 0 ? -120 : 120;
+
+        await this.runPowerShell(`
+        if (-not ([System.Management.Automation.PSTypeName]'RemoteClick').Type) {
+            Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class RemoteClick { 
+                [DllImport("user32.dll")] public static extern void mouse_event(uint f, uint x, uint y, uint d, int e);
+            }'
+        }
+        [RemoteClick]::mouse_event(2048, 0, 0, ${scrollAmount}, 0)
+        `);
+    }
+
     async performRemoteKey(key) {
         // Map keys to SendKeys format
         const map = {

@@ -242,6 +242,14 @@ async function initDatabase() {
                 if (automation && automation.engine) {
                     await automation.engine.performRemoteKey(data.key);
                 }
+            } else if (data.type === 'right-click') {
+                if (automation && automation.engine) {
+                    await automation.engine.performRemoteRightClick(data.x, data.y);
+                }
+            } else if (data.type === 'scroll') {
+                if (automation && automation.engine) {
+                    await automation.engine.performRemoteScroll(data.delta);
+                }
             }
         }
     });
