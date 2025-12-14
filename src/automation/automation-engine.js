@@ -432,6 +432,17 @@ class AutomationEngine {
         `);
     }
 
+    async focusProcessWindow(pid) {
+        await this.runPowerShell(`
+            $p = Get-Process -Id ${pid} -ErrorAction SilentlyContinue
+            if ($p -and $p.MainWindowHandle -ne 0) {
+                 Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class WinFocus { [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd); [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow); }'
+                 [WinFocus]::ShowWindow($p.MainWindowHandle, 9) # SW_RESTORE
+                 [WinFocus]::SetForegroundWindow($p.MainWindowHandle)
+            }
+        `);
+    }
+
     // ============ YARDIMCI FONKSİYONLAR ============
 
     sleep(ms) {
@@ -609,6 +620,11 @@ class AutomationEngine {
                 const pid = await this.launchProgram(exePath);
                 context.currentPid = pid;
                 await this.sleep((data.waitAfterLaunch || 2) * 1000);
+
+                if (pid) {
+                    await this.focusProcessWindow(pid);
+                }
+
                 await this.sleep((data.delayAfter || 0) * 1000);
                 break;
 
