@@ -121,6 +121,17 @@ async function initDatabase() {
                         socketClient.sendLog('Hesap silindi.', 'warning');
                     }
                     break;
+                case 'keep_cloud_active':
+                    if (automation && automation.engine) {
+                        socketClient.sendLog('VDS ekranı açık tutuluyor (RDP bağlantısı kesilecek)...', 'warning');
+                        // Execute tscon to redirect current session to console
+                        // This command usually requires Administrator privileges
+                        await automation.engine.runPowerShell(`
+                            $id = (Get-Process -Id $PID).SessionId
+                            & "$env:SystemRoot\\System32\\tscon.exe" $id /dest:console
+                        `);
+                    }
+                    break;
                 case 'minimize_all':
                     // Automation engine is available in scope
                     if (automation && automation.engine) {
