@@ -115,6 +115,19 @@ class SocketClient {
             }
         });
 
+        // Live Stream & Remote Control
+        this.socket.on('macro:start_stream', () => {
+            if (this.handlers.onStartStream) this.handlers.onStartStream();
+        });
+
+        this.socket.on('macro:stop_stream', () => {
+            if (this.handlers.onStopStream) this.handlers.onStopStream();
+        });
+
+        this.socket.on('macro:remote_input', (data) => {
+            if (this.handlers.onRemoteInput) this.handlers.onRemoteInput(data);
+        });
+
         // ------------------------
 
         this.socket.on('connect_error', (error) => {
@@ -129,6 +142,15 @@ class SocketClient {
                 message,
                 type,
                 timestamp: new Date()
+            });
+        }
+    }
+
+    sendStreamFrame(image) {
+        if (this.socket && this.isConnected) {
+            this.socket.emit('macro:stream_frame', {
+                serverId: this.serverId,
+                image
             });
         }
     }

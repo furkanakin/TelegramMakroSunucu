@@ -22,6 +22,7 @@ let db = null;
 let automation = null;
 let coordinatePickerActive = false;
 let coordinateResolve = null;
+let streamInterval = null;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -173,6 +174,52 @@ async function initDatabase() {
             } catch (e) {
                 console.error("Screenshot error", e);
                 return null;
+            }
+        },
+        onStartStream: () => {
+            if (streamInterval) clearInterval(streamInterval);
+            console.log("Starting stream...");
+            socketClient.sendLog('Canlı yayın başlatılıyor...', 'info');
+            const { desktopCapturer } = require('electron');
+
+            let noSourceCount = 0;
+
+            streamInterval = setInterval(async () => {
+                try {
+                    const sources = await desktopCapturer.getSources({ types: ['screen'], thumbnailSize: { width: 960, height: 540 } });
+                    if (sources.length > 0) {
+                        const buffer = sources[0].thumbnail.toJPEG(40); // Low quality for speed
+                        const b64 = `data:image/jpeg;base64,${buffer.toString('base64')}`;
+                        socketClient.sendStreamFrame(b64);
+                        noSourceCount = 0;
+                    } else {
+                        noSourceCount++;
+                        if (noSourceCount === 1 || noSourceCount % 20 === 0) { // Log occasionally (every ~6s)
+                            console.warn("No screen sources found");
+                            socketClient.sendLog('Stream Uyarısı: Ekran kaynağı bulunamadı! RDP oturumu açık mı?', 'warning');
+                        }
+                    }
+                } catch (e) {
+                    console.error("Stream error", e);
+                    if (noSourceCount === 0) { // Log only if it's a new error burst or spam prevention
+                        socketClient.sendLog(`Stream Hatası: ${e.message}`, 'error');
+                        noSourceCount++;
+                    }
+                }
+            }, 300); // ~3 FPS
+        },
+        onStopStream: () => {
+            if (streamInterval) {
+                clearInterval(streamInterval);
+                streamInterval = null;
+                console.log("Stopping stream...");
+            }
+        },
+        onRemoteInput: async (data) => {
+            if (data.type === 'click') {
+                if (automation && automation.engine) {
+                    await automation.engine.performRemoteClick(data.x, data.y);
+                }
             }
         }
     });
