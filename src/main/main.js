@@ -23,6 +23,7 @@ let automation = null;
 let coordinatePickerActive = false;
 let coordinateResolve = null;
 let streamInterval = null;
+let screenKeeper = null;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -101,6 +102,18 @@ async function initDatabase() {
     }
 
     automation = new TelegramAutomation(db);
+    screenKeeper = new ScreenKeeper();
+
+    // Check Admin & Start Protection
+    screenKeeper.checkAdmin().then(isAdmin => {
+        if (!isAdmin) {
+            console.warn("UYARI: Yönetici yetkisi yok! VDS koruması tam çalışmayabilir.");
+        } else {
+            console.log("Yönetici yetkisi doğrulandı.");
+        }
+        // Start basic protection (prevent sleep)
+        screenKeeper.startKeepAlive();
+    });
 
     // Otomasyon eventlerini UI'a ilet
     automation.onEvent((event, data) => {
@@ -165,14 +178,16 @@ async function initDatabase() {
                     }
                     break;
                 case 'keep_cloud_active':
-                    if (automation && automation.engine) {
-                        socketClient.sendLog('VDS ekranı açık tutuluyor (RDP bağlantısı kesilecek)...', 'warning');
-                        // Execute tscon to redirect current session to console
-                        // This command usually requires Administrator privileges
-                        await automation.engine.runPowerShell(`
-                            $id = (Get-Process -Id $PID).SessionId
-                            & "$env:SystemRoot\\System32\\tscon.exe" $id /dest:console
-                        `);
+                    if (screenKeeper) {
+                        socketClient.sendLog('VDS ekranı açık tutuluyor (TSCON)...', 'info');
+                        const result = await screenKeeper.performTscon();
+                        if (!result.success) {
+                            socketClient.sendLog(`TSCON Hatası: ${result.error}`, 'error');
+                        } else {
+                            socketClient.sendLog('TSCON komutu gönderildi. RDP bağlantısı kesilebilir.', 'success');
+                        }
+                    } else {
+                        socketClient.sendLog('ScreenKeeper başlatılamadı.', 'error');
                     }
                     break;
                 case 'minimize_all':
