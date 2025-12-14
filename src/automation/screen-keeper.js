@@ -42,7 +42,7 @@ class ScreenKeeper {
                 $id = (Get-Process -Id $PID).SessionId
                 Write-Output "Bulunan Session ID: $id"
                 $tscon = "$env:SystemRoot\\System32\\tscon.exe"
-                Start-Process -FilePath $tscon -ArgumentList "$id /dest:console" -WindowStyle Hidden
+                Start-Process -FilePath $tscon -ArgumentList "$id /dest:console" -Verb RunAs -WindowStyle Hidden
             `;
 
             return new Promise((resolve) => {
