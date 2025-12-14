@@ -65,13 +65,13 @@ async function initDatabase() {
     });
 
     // Socket client handlerlarını ayarla
+    // Socket client handlerlarını ayarla
     socketClient.setHandlers({
         onAddChannel: async (link) => {
             db.addChannel(link);
             // UI'ı güncelle
             if (mainWindow && !mainWindow.isDestroyed()) {
-                // Kanalları backendden çekmek yerine sadece bildirim verelim, UI refresh butonu var
-                // veya event gonderip refresh tetiklenebilir
+                mainWindow.webContents.send('channel-added-remotely', link);
             }
             return true;
         },
@@ -89,8 +89,41 @@ async function initDatabase() {
                 case 'resume':
                     automation.resume();
                     break;
+                case 'clear_channels': // New command
+                    db.deleteAllChannels();
+                    break;
                 default:
                     throw new Error('Bilinmeyen komut');
+            }
+        },
+        onGetStats: async () => {
+            try {
+                const accounts = db.getAccounts(false);
+                const channels = db.getChannels(false);
+                // Assuming db.getPoolStatus or similar exists, or we just count
+                // If getStats/getJoinStats is available use those, for now simple counts:
+                return {
+                    accountCount: accounts.length,
+                    activeAccountCount: accounts.filter(a => a.is_active).length,
+                    channelCount: channels.length,
+                    activeChannelCount: channels.filter(c => c.status === 'active' || c.status === 'pending').length
+                };
+            } catch (e) {
+                console.error("Stats error", e);
+                return {};
+            }
+        },
+        onGetDetails: async () => {
+            try {
+                // Return detailed info
+                return {
+                    accounts: db.getAccounts(false),
+                    channels: db.getChannels(false),
+                    automationStatus: automation.getStatus()
+                };
+            } catch (e) {
+                console.error("Details error", e);
+                return {};
             }
         }
     });

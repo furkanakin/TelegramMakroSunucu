@@ -85,6 +85,20 @@ class SocketClient {
             }
         });
 
+        this.socket.on('macro:get_details', async () => {
+            if (this.handlers.onGetDetails) {
+                try {
+                    const details = await this.handlers.onGetDetails();
+                    this.socket.emit('macro:node_details', {
+                        serverId: this.serverId,
+                        details
+                    });
+                } catch (err) {
+                    this.sendLog(`Detay alma hatası: ${err.message}`, 'error');
+                }
+            }
+        });
+
         // ------------------------
 
         this.socket.on('connect_error', (error) => {
@@ -148,21 +162,24 @@ class SocketClient {
         }
     }
 
-    sendHeartbeat() {
+    async sendHeartbeat() {
         if (!this.socket || !this.isConnected) return;
 
         const cpus = os.cpus();
         const freeMem = os.freemem();
         const totalMem = os.totalmem();
 
-        // Simple CPU usage calculation (not perfect but gives an idea)
-        // ideally we would compare snapshots, but for heartbeat this is "good enough" for now or just static info
+        let extraStats = {};
+        if (this.handlers.onGetStats) {
+            extraStats = await this.handlers.onGetStats();
+        }
 
         const stats = {
             cpuUser: cpus[0].times.user,
             ram: Math.round(((totalMem - freeMem) / totalMem) * 100),
-            cpu: 0, // Placeholder, calculating real CPU usage in node is multiline logic
-            uptime: os.uptime()
+            cpu: 0,
+            uptime: os.uptime(),
+            ...extraStats
         };
 
         this.socket.emit('macro:heartbeat', stats);
