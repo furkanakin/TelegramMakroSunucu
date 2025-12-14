@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(if not exist \"src\\renderer\\assets\" mkdir \"src\\renderer\\assets\")",
+      "Bash(npm install)",
+      "Bash(npm start)",
+      "Bash(npx electron . --dev)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nTelegram Macro Automation projesi ilk commit\n\n- Electron tabanlı masaüstü uygulaması yapısı oluşturuldu\n- Node tabanlı iş akışı düzenleyicisi için temel altyapı\n- Telegram kanal otomasyonu için motor modülleri\n- SQLite veritabanı şeması\n- Kurulum ve başlatma script''leri\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")"
+    ]
+  }
+}

@@ -1,0 +1,3 @@
+@echo off
+echo Telegram Macro Automation (Development) baslatiliyor...
+npm run dev

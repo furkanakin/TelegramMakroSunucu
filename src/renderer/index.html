@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Macro Automation</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="light-theme">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fab fa-telegram"></i>
+                <span>TG Macro</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item" data-page="accounts">
+                    <i class="fas fa-users"></i>
+                    <span>Hesaplar</span>
+                </li>
+                <li class="nav-item" data-page="channels">
+                    <i class="fas fa-broadcast-tower"></i>
+                    <span>Kanallar</span>
+                </li>
+                <li class="nav-item" data-page="workflow">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Workflow</span>
+                </li>
+                <li class="nav-item" data-page="automation">
+                    <i class="fas fa-robot"></i>
+                    <span>Otomasyon</span>
+                </li>
+                <li class="nav-item" data-page="history">
+                    <i class="fas fa-history"></i>
+                    <span>İstek Geçmişi</span>
+                </li>
+                <li class="nav-item" data-page="logs">
+                    <i class="fas fa-list-alt"></i>
+                    <span>Loglar</span>
+                </li>
+                <li class="nav-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Ayarlar</span>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="theme-toggle" id="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <span>Tema</span>
+                </div>
+                <div class="status-indicator" id="automation-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Beklemede</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div class="page active" id="page-dashboard">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-accounts">0</span>
+                            <span class="stat-label">Hesap</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-broadcast-tower"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-channels">0</span>
+                            <span class="stat-label">Kanal</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-paper-plane"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-requests">0</span>
+                            <span class="stat-label">Toplam İstek</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-successful">0</span>
+                            <span class="stat-label">Başarılı</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Hızlı Başlat</h3>
+                        </div>
+                        <div class="card-body">
+                            <button class="btn btn-primary btn-lg" id="quick-start-btn">
+                                <i class="fas fa-play"></i> Otomasyonu Başlat
+                            </button>
+                            <p class="help-text">Varsayılan ayarlarla otomasyonu başlatır</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Son Aktiviteler</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-list" id="recent-activities">
+                                <p class="empty-state">Henüz aktivite yok</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accounts Page -->
+            <div class="page" id="page-accounts">
+                <div class="page-header">
+                    <h1>Telegram Hesapları</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" id="refresh-accounts-btn">
+                            <i class="fas fa-sync"></i> Yenile
+                        </button>
+                        <button class="btn btn-primary" id="select-accounts-folder-btn">
+                            <i class="fas fa-folder-open"></i> Ana Klasör Seç
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card" id="accounts-folder-card">
+                    <div class="card-header">
+                        <h3>Hesaplar Klasörü</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="folder-info">
+                            <div class="form-group">
+                                <label>Seçili Ana Klasör</label>
+                                <div class="selected-folder" id="selected-accounts-folder">
+                                    <i class="fas fa-folder"></i>
+                                    <span id="accounts-folder-path">Klasör seçilmedi</span>
+                                </div>
+                            </div>
+                            <p class="help-text">
+                                Ana klasörü seçin. İçindeki numaralı alt klasörler (örn: +905551234567) otomatik olarak taranacak ve her birinde Telegram.exe aranacaktır.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Bulunan Hesaplar</h3>
+                        <span class="badge" id="accounts-count">0</span>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table" id="accounts-table">
+                            <thead>
+                                <tr>
+                                    <th>Hesap (Klasör Adı)</th>
+                                    <th>Telegram.exe Yolu</th>
+                                    <th>Son Kullanım</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Channels Page -->
+            <div class="page" id="page-channels">
+                <div class="page-header">
+                    <h1>Kanal Linkleri</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-danger" id="delete-all-channels-btn">
+                            <i class="fas fa-trash"></i> Tumunu Sil
+                        </button>
+                        <button class="btn btn-secondary" id="bulk-add-channels-btn">
+                            <i class="fas fa-list"></i> Toplu Ekle
+                        </button>
+                        <button class="btn btn-primary" id="add-channel-btn">
+                            <i class="fas fa-plus"></i> Kanal Ekle
+                        </button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="data-table" id="channels-table">
+                            <thead>
+                                <tr>
+                                    <th>Link</th>
+                                    <th>Eklenme Tarihi</th>
+                                    <th>Durum</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Page -->
+            <div class="page" id="page-workflow">
+                <div class="page-header">
+                    <h1>Workflow Editörü</h1>
+                    <div class="header-actions">
+                        <select id="workflow-select" class="form-select">
+                            <option value="">Yeni Workflow</option>
+                        </select>
+                        <button class="btn btn-icon btn-secondary" id="edit-workflow-btn" title="Workflow Duzenle" style="display:none;">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-secondary" id="save-workflow-btn">
+                            <i class="fas fa-save"></i> Kaydet
+                        </button>
+                        <button class="btn btn-success" id="test-workflow-btn">
+                            <i class="fas fa-play-circle"></i> Akisi Test Et
+                        </button>
+                        <button class="btn btn-primary" id="set-default-workflow-btn">
+                            <i class="fas fa-star"></i> Varsayilan Yap
+                        </button>
+                        <button class="btn btn-secondary" id="export-workflow-btn">
+                            <i class="fas fa-file-export"></i> Disari Aktar
+                        </button>
+                        <button class="btn btn-secondary" id="import-workflow-btn">
+                            <i class="fas fa-file-import"></i> Iceri Aktar
+                        </button>
+                    </div>
+                </div>
+                <div class="workflow-container">
+                    <!-- Zoom ve Odaklanma Kontrolleri -->
+                    <div class="canvas-controls">
+                        <button class="canvas-ctrl-btn" id="zoom-in-btn" title="Yakinlastir (+)">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <span class="zoom-level" id="zoom-level">100%</span>
+                        <button class="canvas-ctrl-btn" id="zoom-out-btn" title="Uzaklastir (-)">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button class="canvas-ctrl-btn" id="zoom-reset-btn" title="Sifirla">
+                            <i class="fas fa-compress-arrows-alt"></i>
+                        </button>
+                        <button class="canvas-ctrl-btn" id="focus-nodes-btn" title="Nodelara Odaklan">
+                            <i class="fas fa-crosshairs"></i>
+                        </button>
+                        <span class="canvas-divider"></span>
+                        <button class="canvas-ctrl-btn" id="arrange-nodes-btn" title="Nodelari Diz">
+                            <i class="fas fa-align-center"></i>
+                        </button>
+                        <button class="canvas-ctrl-btn" id="select-all-btn" title="Tumunu Sec (Ctrl+A)">
+                            <i class="fas fa-object-group"></i>
+                        </button>
+                        <button class="canvas-ctrl-btn" id="clear-selection-btn" title="Secimi Temizle">
+                            <i class="fas fa-object-ungroup"></i>
+                        </button>
+                    </div>
+                    <!-- Selection Toolbar - Coklu secimde gorunur -->
+                    <div class="selection-toolbar" id="selection-toolbar" style="display: none;">
+                        <span class="selection-count"><span id="selected-count">0</span> node secili</span>
+                        <div class="color-picker-group">
+                            <span>Renk:</span>
+                            <button class="color-btn" data-color="#0ea5e9" style="background: #0ea5e9;" title="Mavi"></button>
+                            <button class="color-btn" data-color="#22c55e" style="background: #22c55e;" title="Yesil"></button>
+                            <button class="color-btn" data-color="#f59e0b" style="background: #f59e0b;" title="Turuncu"></button>
+                            <button class="color-btn" data-color="#ef4444" style="background: #ef4444;" title="Kirmizi"></button>
+                            <button class="color-btn" data-color="#8b5cf6" style="background: #8b5cf6;" title="Mor"></button>
+                            <button class="color-btn" data-color="#ec4899" style="background: #ec4899;" title="Pembe"></button>
+                            <button class="color-btn" data-color="#6b7280" style="background: #6b7280;" title="Gri"></button>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" id="copy-selected-btn">
+                            <i class="fas fa-copy"></i> Kopyala
+                        </button>
+                        <button class="btn btn-danger btn-sm" id="delete-selected-btn">
+                            <i class="fas fa-trash"></i> Sil
+                        </button>
+                    </div>
+                    <div class="node-palette">
+                        <h4>Aksiyonlar</h4>
+                        <div class="node-category">
+                            <h5>Mouse</h5>
+                            <div class="node-item" data-type="mouseClick">
+                                <i class="fas fa-mouse-pointer"></i> Tıklama
+                            </div>
+                            <div class="node-item" data-type="mouseDoubleClick">
+                                <i class="fas fa-mouse"></i> Çift Tıklama
+                            </div>
+                            <div class="node-item" data-type="mouseMove">
+                                <i class="fas fa-arrows-alt"></i> Hareket
+                            </div>
+                            <div class="node-item" data-type="mouseScroll">
+                                <i class="fas fa-scroll"></i> Scroll
+                            </div>
+                            <div class="node-item" data-type="mouseDrag">
+                                <i class="fas fa-hand-rock"></i> Sürükle
+                            </div>
+                        </div>
+                        <div class="node-category">
+                            <h5>Klavye</h5>
+                            <div class="node-item" data-type="keyPress">
+                                <i class="fas fa-keyboard"></i> Tuş Bas
+                            </div>
+                            <div class="node-item" data-type="keyCombo">
+                                <i class="fas fa-layer-group"></i> Kombinasyon
+                            </div>
+                            <div class="node-item" data-type="typeText">
+                                <i class="fas fa-font"></i> Metin Yaz
+                            </div>
+                        </div>
+                        <div class="node-category">
+                            <h5>Program</h5>
+                            <div class="node-item" data-type="launchProgram">
+                                <i class="fas fa-rocket"></i> Program Aç
+                            </div>
+                            <div class="node-item" data-type="closeProgram">
+                                <i class="fas fa-times-circle"></i> Program Kapat
+                            </div>
+                            <div class="node-item" data-type="maximizeWindow">
+                                <i class="fas fa-expand"></i> Tam Ekran
+                            </div>
+                        </div>
+                        <div class="node-category">
+                            <h5>Bekleme</h5>
+                            <div class="node-item" data-type="delay">
+                                <i class="fas fa-clock"></i> Bekle
+                            </div>
+                            <div class="node-item" data-type="randomDelay">
+                                <i class="fas fa-random"></i> Rastgele Bekle
+                            </div>
+                        </div>
+                        <div class="node-category">
+                            <h5>Telegram</h5>
+                            <div class="node-item" data-type="pasteChannelLinks">
+                                <i class="fas fa-paste"></i> Kanal Link Yapıştır
+                            </div>
+                        </div>
+                    </div>
+                    <div class="workflow-canvas" id="workflow-canvas">
+                        <svg class="connections-layer" id="connections-svg" width="10000" height="10000" xmlns="http://www.w3.org/2000/svg"></svg>
+                        <div class="nodes-container" id="nodes-container"></div>
+                    </div>
+                    <div class="node-properties" id="node-properties">
+                        <h4>Özellikler</h4>
+                        <div class="properties-content">
+                            <p class="empty-state">Bir node seçin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Automation Page -->
+            <div class="page" id="page-automation">
+                <div class="page-header">
+                    <h1>Otomasyon Kontrolü</h1>
+                </div>
+                <div class="automation-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Kontroller</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label>Calistirilacak Workflow</label>
+                                <div class="input-with-button">
+                                    <select class="form-select" id="automation-workflow-select">
+                                        <option value="">-- Workflow Secin --</option>
+                                    </select>
+                                </div>
+                                <p class="help-text" id="automation-workflow-info" style="margin-top: 8px; color: var(--accent-success);"></p>
+                            </div>
+                            <div class="control-buttons">
+                                <button class="btn btn-success btn-lg" id="start-automation-btn">
+                                    <i class="fas fa-play"></i> Baslat
+                                </button>
+                                <button class="btn btn-warning btn-lg" id="pause-automation-btn" disabled>
+                                    <i class="fas fa-pause"></i> Duraklat
+                                </button>
+                                <button class="btn btn-danger btn-lg" id="stop-automation-btn" disabled>
+                                    <i class="fas fa-stop"></i> Durdur
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Ayarlar</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Hesap Başına Kanal Sayısı</label>
+                                <input type="number" class="form-input" id="channels-per-account" value="5" min="1" max="20">
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="exclude-requested" checked>
+                                    Daha önce istek atılmışları hariç tut
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card full-width">
+                        <div class="card-header">
+                            <h3>Canlı Durum</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="live-status">
+                                <div class="status-item">
+                                    <span class="label">Durum:</span>
+                                    <span class="value" id="live-status">Beklemede</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">Aktif Hesap:</span>
+                                    <span class="value" id="live-account">-</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">İşlenen Hesap:</span>
+                                    <span class="value" id="live-processed">0</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">Toplam İstek:</span>
+                                    <span class="value" id="live-requests">0</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">Loop:</span>
+                                    <span class="value" id="live-loop">1</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="automation-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card full-width">
+                        <div class="card-header">
+                            <h3>Otomasyon Logları</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="log-viewer" id="automation-log-viewer">
+                                <p class="empty-state">Otomasyon başladığında loglar burada görünecek</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Page -->
+            <div class="page" id="page-history">
+                <div class="page-header">
+                    <h1>İstek Geçmişi</h1>
+                    <div class="header-actions">
+                        <select class="form-input" id="history-account-filter" style="width: 200px;">
+                            <option value="">Tüm Hesaplar</option>
+                        </select>
+                        <button class="btn btn-secondary" id="refresh-history-btn">
+                            <i class="fas fa-sync"></i> Yenile
+                        </button>
+                        <button class="btn btn-danger" id="clear-history-btn">
+                            <i class="fas fa-trash"></i> Geçmişi Temizle
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-cards" style="margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-value" id="history-total-requests">0</div>
+                        <div class="stat-label">Toplam İstek</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value" id="history-success-requests">0</div>
+                        <div class="stat-label">Başarılı</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value" id="history-pending-requests">0</div>
+                        <div class="stat-label">Beklemede</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-value" id="history-failed-requests">0</div>
+                        <div class="stat-label">Başarısız</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Hesap - Kanal İstekleri</h3>
+                        <span class="badge" id="history-count-badge">0 kayıt</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="data-table" id="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Hesap</th>
+                                        <th>Kanal</th>
+                                        <th>Durum</th>
+                                        <th>Tarih</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body">
+                                    <tr>
+                                        <td colspan="5" class="empty-state">Henüz istek geçmişi yok</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Page -->
+            <div class="page" id="page-logs">
+                <div class="page-header">
+                    <h1>Sistem Logları</h1>
+                    <button class="btn btn-danger" id="clear-logs-btn">
+                        <i class="fas fa-trash"></i> Logları Temizle
+                    </button>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="log-viewer full-height" id="system-log-viewer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div class="page" id="page-settings">
+                <div class="page-header">
+                    <h1>Ayarlar</h1>
+                </div>
+                <div class="settings-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Genel Ayarlar</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Varsayılan Bekleme Süresi (saniye)</label>
+                                <input type="number" class="form-input" id="default-delay" value="1" min="0.1" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Telegram Açılış Bekleme (saniye)</label>
+                                <input type="number" class="form-input" id="telegram-launch-delay" value="3" min="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>VDS/RDP Ayarları</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="keep-screen-alive" checked>
+                                    Ekranı aktif tut (RDP kapatılsa bile)
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="prevent-sleep" checked>
+                                    Uyku modunu engelle
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Ekran Bilgisi</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-item">
+                                <span class="label">Çözünürlük:</span>
+                                <span class="value" id="screen-resolution">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="add-channel-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Kanal Ekle</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Kanal Linki</label>
+                    <input type="text" class="form-input" id="channel-link" placeholder="https://t.me/...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-cancel">İptal</button>
+                <button class="btn btn-primary" id="save-channel-btn">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="bulk-channels-modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3>Toplu Kanal Ekle</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Kanal Linkleri (her satıra bir link)</label>
+                    <textarea class="form-textarea" id="bulk-channels-input" rows="10" placeholder="https://t.me/kanal1&#10;https://t.me/kanal2&#10;https://t.me/kanal3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-cancel">İptal</button>
+                <button class="btn btn-primary" id="save-bulk-channels-btn">Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="save-workflow-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="save-workflow-modal-title">Workflow Kaydet</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Workflow Adı</label>
+                    <input type="text" class="form-input" id="workflow-name" placeholder="Workflow adı">
+                </div>
+                <div class="form-group">
+                    <label>Açıklama</label>
+                    <textarea class="form-textarea" id="workflow-description" rows="3" placeholder="Workflow açıklaması (opsiyonel)"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-cancel">İptal</button>
+                <button class="btn btn-primary" id="confirm-save-workflow-btn">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="rename-workflow-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Workflow Ismini Duzenle</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Workflow Adı</label>
+                    <input type="text" class="form-input" id="rename-workflow-name" placeholder="Workflow adı">
+                </div>
+                <div class="form-group">
+                    <label>Açıklama</label>
+                    <textarea class="form-textarea" id="rename-workflow-description" rows="3" placeholder="Workflow açıklaması (opsiyonel)"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-cancel">İptal</button>
+                <button class="btn btn-danger" id="delete-workflow-btn">Sil</button>
+                <button class="btn btn-primary" id="confirm-rename-workflow-btn">Guncelle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Koordinat Seçici Overlay -->
+    <div class="coordinate-picker-overlay" id="coordinate-picker-overlay">
+        <div class="picker-message">
+            <i class="fas fa-crosshairs"></i>
+            <p>Koordinat seçmek için ekranda bir noktaya tıklayın</p>
+            <p class="sub">ESC tuşuna basarak iptal edebilirsiniz</p>
+        </div>
+    </div>
+
+    <script src="components/app.js"></script>
+</body>
+</html>

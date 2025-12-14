@@ -1,0 +1,3 @@
+@echo off
+echo Telegram Macro Automation baslatiliyor...
+npm start
