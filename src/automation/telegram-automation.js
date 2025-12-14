@@ -227,20 +227,26 @@ class TelegramAutomation {
             }
         };
 
-        const result = await this.engine.executeWorkflow(workflow.nodes, workflow.edges, context);
+        try {
+            const result = await this.engine.executeWorkflow(workflow.nodes, workflow.edges, context);
 
-        if (result.success) {
-            // Kanal isteklerini kaydet
-            for (const channel of channels) {
-                this.db.recordJoinRequest(account.id, channel.id, 'success');
-                this.stats.successfulRequests++;
+            if (result.success) {
+                // Kanal isteklerini kaydet
+                for (const channel of channels) {
+                    this.db.recordJoinRequest(account.id, channel.id, 'success');
+                    this.stats.successfulRequests++;
+                }
+            } else {
+                for (const channel of channels) {
+                    this.db.recordJoinRequest(account.id, channel.id, 'failed');
+                    this.stats.failedRequests++;
+                }
+                throw new Error(result.error);
             }
-        } else {
-            for (const channel of channels) {
-                this.db.recordJoinRequest(account.id, channel.id, 'failed');
-                this.stats.failedRequests++;
-            }
-            throw new Error(result.error);
+        } finally {
+            console.log('[TelegramAutomation] Workflow bitti. Temizlik yapılıyor (Telegram kapatılıyor)...');
+            await this.engine.killAllTelegram();
+            await this.engine.sleep(1500);
         }
     }
 
