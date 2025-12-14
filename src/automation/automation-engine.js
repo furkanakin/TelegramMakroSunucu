@@ -93,6 +93,7 @@ class AutomationEngine {
     }
 
     async performRemoteRightClick(normalizedX, normalizedY) {
+        console.log('Performing Right Click', normalizedX, normalizedY);
         const x = Math.round(normalizedX * this.screenWidth);
         const y = Math.round(normalizedY * this.screenHeight);
 
@@ -100,7 +101,7 @@ class AutomationEngine {
         if (-not ([System.Management.Automation.PSTypeName]'RemoteClick').Type) {
             Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class RemoteClick { 
                 [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y); 
-                [DllImport("user32.dll")] public static extern void mouse_event(uint f, uint x, uint y, uint d, int e);
+                [DllImport("user32.dll")] public static extern void mouse_event(uint f, uint x, uint y, int d, int e);
             }'
         }
         [RemoteClick]::SetCursorPos(${x}, ${y})
@@ -110,13 +111,14 @@ class AutomationEngine {
     }
 
     async performRemoteScroll(delta) {
-        // Web deltaY > 0 is scroll down. Win32 wheel negative is scroll down (towards user).
-        const scrollAmount = delta > 0 ? -120 : 120;
+        console.log('Performing Scroll', delta);
+        // Larger scroll amount for better feel
+        const scrollAmount = delta > 0 ? -240 : 240;
 
         await this.runPowerShell(`
         if (-not ([System.Management.Automation.PSTypeName]'RemoteClick').Type) {
             Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class RemoteClick { 
-                [DllImport("user32.dll")] public static extern void mouse_event(uint f, uint x, uint y, uint d, int e);
+                [DllImport("user32.dll")] public static extern void mouse_event(uint f, uint x, uint y, int d, int e);
             }'
         }
         [RemoteClick]::mouse_event(2048, 0, 0, ${scrollAmount}, 0)
