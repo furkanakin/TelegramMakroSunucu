@@ -108,6 +108,18 @@ async function initDatabase() {
                         socketClient.sendLog(`Kanal silme hatası: ${err.message}`, 'error');
                     }
                     break;
+                case 'delete_channel':
+                    if (command.id) {
+                        db.deleteChannel(command.id);
+                        socketClient.sendLog('Kanal silindi.', 'success');
+                    }
+                    break;
+                case 'delete_account':
+                    if (command.id) {
+                        db.deleteAccount(command.id);
+                        socketClient.sendLog('Hesap silindi.', 'warning');
+                    }
+                    break;
                 default:
                     throw new Error('Bilinmeyen komut');
             }
