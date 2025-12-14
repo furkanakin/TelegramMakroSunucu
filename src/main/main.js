@@ -7,7 +7,7 @@ const DatabaseManager = require('../database/schema');
 const TelegramAutomation = require('../automation/telegram-automation');
 const AutomationEngine = require('../automation/automation-engine');
 const ScreenKeeper = require('../automation/screen-keeper');
-const socketClient = require('../services/socketClient');
+const socketClient = require('./services/socketClient');
 
 // Data klasörünü oluştur
 const dataPath = path.join(__dirname, '../../data');
