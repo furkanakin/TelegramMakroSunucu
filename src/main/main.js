@@ -63,6 +63,37 @@ async function initDatabase() {
             mainWindow.webContents.send('automation-event', { event, data });
         }
     });
+
+    // Socket client handlerlarını ayarla
+    socketClient.setHandlers({
+        onAddChannel: async (link) => {
+            db.addChannel(link);
+            // UI'ı güncelle
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                // Kanalları backendden çekmek yerine sadece bildirim verelim, UI refresh butonu var
+                // veya event gonderip refresh tetiklenebilir
+            }
+            return true;
+        },
+        onCommand: async (command) => {
+            switch (command.type) {
+                case 'start':
+                    await automation.start(command.options || {});
+                    break;
+                case 'stop':
+                    await automation.stop();
+                    break;
+                case 'pause':
+                    automation.pause();
+                    break;
+                case 'resume':
+                    automation.resume();
+                    break;
+                default:
+                    throw new Error('Bilinmeyen komut');
+            }
+        }
+    });
 }
 
 // App hazır olduğunda

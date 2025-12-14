@@ -19,6 +19,11 @@ class SocketClient {
         this.serverName = os.hostname();
         this.isConnected = false;
         this.heartbeatInterval = null;
+        this.handlers = {};
+    }
+
+    setHandlers(handlers) {
+        this.handlers = handlers;
     }
 
     connect(url) {
@@ -54,9 +59,48 @@ class SocketClient {
             this.stopHeartbeat();
         });
 
+        // --- Command Listeners ---
+
+        this.socket.on('macro:add_channel', async (channelLink) => {
+            console.log('[SocketClient] Received channel:', channelLink);
+            if (this.handlers.onAddChannel) {
+                try {
+                    await this.handlers.onAddChannel(channelLink);
+                    this.sendLog(`Kanal eklendi: ${channelLink}`, 'success');
+                } catch (err) {
+                    this.sendLog(`Kanal ekleme hatası: ${err.message}`, 'error');
+                }
+            }
+        });
+
+        this.socket.on('macro:command', async (command) => {
+            console.log('[SocketClient] Received command:', command);
+            if (this.handlers.onCommand) {
+                try {
+                    await this.handlers.onCommand(command);
+                    this.sendLog(`Komut işlendi: ${command.type}`, 'info');
+                } catch (err) {
+                    this.sendLog(`Komut hatası: ${err.message}`, 'error');
+                }
+            }
+        });
+
+        // ------------------------
+
         this.socket.on('connect_error', (error) => {
             // console.error('[SocketClient] Connection error:', error.message);
         });
+    }
+
+    sendLog(message, type = 'info') {
+        if (this.socket && this.isConnected) {
+            this.socket.emit('macro:log', {
+                serverId: this.serverId,
+                message,
+                type,
+                timestamp: new Date()
+            });
+        }
     }
 
     register() {
