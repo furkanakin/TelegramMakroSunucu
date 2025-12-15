@@ -287,8 +287,16 @@ async function initDatabase() {
             else if (data.type === 'scroll' && automation?.engine) await automation.engine.performRemoteScroll(data.delta);
         },
         onGetSessions: async () => {
-            const accounts = db.getAccounts(false);
-            return accounts.map(a => a.session_name);
+            console.log('Retrieving sessions from DB...');
+            try {
+                const accounts = db.getAccounts(false);
+                const sessions = accounts.map(a => a.session_name);
+                console.log(`Found ${sessions.length} sessions.`);
+                return sessions;
+            } catch (error) {
+                console.error('Error getting sessions:', error);
+                throw error;
+            }
         }
     });
 }
