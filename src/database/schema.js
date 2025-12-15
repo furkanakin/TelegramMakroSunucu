@@ -193,7 +193,7 @@ class DatabaseManager {
     }
 
     getAccountById(id) {
-        return this.getOne('SELECT * FROM accounts WHERE id = ?', [id]);
+        return this.getOne('SELECT * FROM accounts WHERE id = ?', [parseInt(id)]);
     }
 
     updateAccountLastUsed(id) {
