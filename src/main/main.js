@@ -189,14 +189,22 @@ async function initDatabase() {
                     console.log('[VDS] Received open_telegram command:', JSON.stringify(command));
                     // command.accountId or command.phoneNumber
                     try {
-                        let account = null;
-                        if (command.accountId) account = db.getAccountById(command.accountId);
-                        if (!account && command.phoneNumber) account = db.getAccountByPhone(command.phoneNumber);
+                        // Prioritize lookup by PHONE NUMBER because IDs might differ between Backend and VDS databases
+                        if (command.phoneNumber) {
+                            account = db.getAccountByPhone(command.phoneNumber);
+                            console.log(`[VDS] Lookup by phone ${command.phoneNumber}: ${account ? 'Found' : 'Not Found'}`);
+                        }
+
+                        // If not found by phone, try ID (less reliable across systems)
+                        if (!account && command.accountId) {
+                            account = db.getAccountById(command.accountId);
+                            console.log(`[VDS] Lookup by ID ${command.accountId}: ${account ? 'Found' : 'Not Found'}`);
+                        }
 
                         if (!account) {
                             // Fallback: search in all accounts with loose equality
                             const accounts = db.getAccounts(false);
-                            account = accounts.find(a => a.id == command.accountId || a.phone_number == command.phoneNumber);
+                            account = accounts.find(a => a.phone_number == command.phoneNumber || a.id == command.accountId);
                         }
 
                         console.log('[VDS] Account search result:', account ? `Found: ${account.phone_number} (ID: ${account.id})` : 'NOT FOUND');
