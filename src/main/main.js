@@ -292,6 +292,9 @@ async function initDatabase() {
                 const accounts = db.getAccounts(false);
                 const sessions = accounts.map(a => a.session_name);
                 console.log(`Found ${sessions.length} sessions.`);
+                if (sessions.length > 0) {
+                    console.log('Sample VDS session names:', sessions.slice(0, 5));
+                }
                 return sessions;
             } catch (error) {
                 console.error('Error getting sessions:', error);
