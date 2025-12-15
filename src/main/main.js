@@ -199,6 +199,8 @@ async function initDatabase() {
                             account = accounts.find(a => a.id == command.accountId || a.phone_number == command.phoneNumber);
                         }
 
+                        console.log('[VDS] Account search result:', account ? `Found: ${account.phone_number} (ID: ${account.id})` : 'NOT FOUND');
+
                         if (account) {
                             const result = await processManager.launchTelegram(account);
                             // result can be true (already running) or object { success: true, pid: 123 }
