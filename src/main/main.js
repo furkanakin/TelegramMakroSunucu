@@ -9,6 +9,7 @@ const TelegramAutomation = require('../automation/telegram-automation');
 const AutomationEngine = require('../automation/automation-engine');
 const ScreenKeeper = require('../automation/screen-keeper');
 const socketClient = require('./services/socketClient');
+const processManager = require('./services/processManager');
 
 // Data klasörünü oluştur
 const dataPath = path.join(__dirname, '../../data');
@@ -127,11 +128,13 @@ async function initDatabase() {
     socketClient.setHandlers({
         onAddChannel: async (link) => {
             db.addChannel(link);
-            // UI'ı güncelle
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('channel-added-remotely', link);
             }
             return true;
+        },
+        onSettingsUpdate: (settings) => {
+            if (processManager) processManager.updateSettings(settings);
         },
         onCommand: async (command) => {
             switch (command.type) {
@@ -147,54 +150,62 @@ async function initDatabase() {
                 case 'resume':
                     automation.resume();
                     break;
-                case 'kill_telegram':
-                    exec('taskkill /F /IM telegram.exe /T', (error, stdout, stderr) => {
-                        if (error) {
-                            socketClient.sendLog(`Telegram kapatma hatası: ${error.message}`, 'error');
-                        } else {
-                            socketClient.sendLog('Telegram processleri sonlandırıldı.', 'success');
-                        }
+                case 'kill_telegram': // Old generic kill
+                    exec('taskkill /F /IM telegram.exe /T', (error) => {
+                        if (processManager) processManager.killAll(); // Also clear our manager
                     });
+                    socketClient.sendLog('Telegramlar kapatıldı.', 'success');
                     break;
-                case 'clear_channels': // New command
+                case 'kill_all_telegram': // New specific kill
+                    if (processManager) processManager.killAll();
+                    socketClient.sendLog('Tüm Telegram süreçleri sonlandırıldı.', 'success');
+                    break;
+                case 'clear_channels':
                     try {
                         db.deleteAllChannels();
-                        console.log('Tüm kanallar silindi.');
                         socketClient.sendLog('Tüm kanallar başarıyla silindi.', 'success');
                     } catch (err) {
                         socketClient.sendLog(`Kanal silme hatası: ${err.message}`, 'error');
                     }
                     break;
                 case 'delete_channel':
-                    if (command.id) {
-                        db.deleteChannel(command.id);
-                        socketClient.sendLog('Kanal silindi.', 'success');
-                    }
+                    if (command.id) db.deleteChannel(command.id);
                     break;
                 case 'delete_account':
-                    if (command.id) {
-                        db.deleteAccount(command.id);
-                        socketClient.sendLog('Hesap silindi.', 'warning');
-                    }
+                    if (command.id) db.deleteAccount(command.id);
                     break;
                 case 'keep_cloud_active':
                     if (screenKeeper) {
                         socketClient.sendLog('VDS ekranı açık tutuluyor (TSCON)...', 'info');
-                        const result = await screenKeeper.performTscon();
-                        if (!result.success) {
-                            socketClient.sendLog(`TSCON Hatası: ${result.error}`, 'error');
-                        } else {
-                            socketClient.sendLog('TSCON komutu gönderildi. RDP bağlantısı kesilebilir.', 'success');
-                        }
-                    } else {
-                        socketClient.sendLog('ScreenKeeper başlatılamadı.', 'error');
+                        screenKeeper.performTscon();
                     }
                     break;
                 case 'minimize_all':
-                    // Automation engine is available in scope
                     if (automation && automation.engine) {
                         await automation.engine.runPowerShell('(New-Object -ComObject Shell.Application).MinimizeAll()');
-                        socketClient.sendLog('Masaüstü gösterildi.', 'info');
+                    }
+                    break;
+                case 'open_telegram':
+                    // command.accountId or command.phoneNumber
+                    try {
+                        let account = null;
+                        if (command.accountId) account = db.getAccountById(command.accountId); // Need to verify db has this method or similar
+                        else if (command.phoneNumber) account = db.getAccountByPhone(command.phoneNumber);
+
+                        if (!account) {
+                            // Fallback: search in all accounts
+                            const accounts = db.getAccounts(false);
+                            account = accounts.find(a => a.id == command.accountId || a.phone_number == command.phoneNumber);
+                        }
+
+                        if (account) {
+                            await processManager.launchTelegram(account);
+                            socketClient.sendLog(`Telegram başlatıldı: ${account.phone_number}`, 'success');
+                        } else {
+                            socketClient.sendLog('Hesap bulunamadı.', 'error');
+                        }
+                    } catch (e) {
+                        socketClient.sendLog(`Telegram başlatma hatası: ${e.message}`, 'error');
                     }
                     break;
                 default:
@@ -205,29 +216,26 @@ async function initDatabase() {
             try {
                 const accounts = db.getAccounts(false);
                 const channels = db.getChannels(false);
-                // Assuming db.getPoolStatus or similar exists, or we just count
-                // If getStats/getJoinStats is available use those, for now simple counts:
                 return {
                     accountCount: accounts.length,
                     activeAccountCount: accounts.filter(a => a.is_active).length,
                     channelCount: channels.length,
-                    activeChannelCount: channels.filter(c => c.status === 'active' || c.status === 'pending').length
+                    activeChannelCount: channels.filter(c => c.status === 'active' || c.status === 'pending').length,
+                    telegramCount: processManager ? processManager.getCount() : 0
                 };
             } catch (e) {
-                console.error("Stats error", e);
                 return {};
             }
         },
         onGetDetails: async () => {
             try {
-                // Return detailed info
                 return {
                     accounts: db.getAccounts(false),
                     channels: db.getChannels(false),
-                    automationStatus: automation.getStatus()
+                    automationStatus: automation.getStatus(),
+                    activeProcesses: processManager ? processManager.getActiveProcesses() : []
                 };
             } catch (e) {
-                console.error("Details error", e);
                 return {};
             }
         },
@@ -240,75 +248,47 @@ async function initDatabase() {
                     thumbnailSize: screenSize
                 });
                 if (sources.length > 0) {
-                    // Reduce quality slightly for network performance if using JPEG
-                    // But toDataURL() defaults to PNG. PNG is big.
-                    // toJPEG(quality) returns Buffer. We want Base64.
                     const buffer = sources[0].thumbnail.toJPEG(60);
                     return `data:image/jpeg;base64,${buffer.toString('base64')}`;
                 }
                 return null;
             } catch (e) {
-                console.error("Screenshot error", e);
                 return null;
             }
         },
         onStartStream: () => {
             if (streamInterval) clearInterval(streamInterval);
-            console.log("Starting stream...");
-            socketClient.sendLog('Canlı yayın başlatılıyor...', 'info');
             const { desktopCapturer } = require('electron');
-
             let noSourceCount = 0;
-
             streamInterval = setInterval(async () => {
                 try {
                     const sources = await desktopCapturer.getSources({ types: ['screen'], thumbnailSize: { width: 960, height: 540 } });
                     if (sources.length > 0) {
-                        const buffer = sources[0].thumbnail.toJPEG(40); // Low quality for speed
+                        const buffer = sources[0].thumbnail.toJPEG(40);
                         const b64 = `data:image/jpeg;base64,${buffer.toString('base64')}`;
                         socketClient.sendStreamFrame(b64);
                         noSourceCount = 0;
-                    } else {
-                        noSourceCount++;
-                        if (noSourceCount === 1 || noSourceCount % 20 === 0) { // Log occasionally (every ~6s)
-                            console.warn("No screen sources found");
-                            socketClient.sendLog('Stream Uyarısı: Ekran kaynağı bulunamadı! RDP oturumu açık mı?', 'warning');
-                        }
                     }
                 } catch (e) {
-                    console.error("Stream error", e);
-                    if (noSourceCount === 0) { // Log only if it's a new error burst or spam prevention
-                        socketClient.sendLog(`Stream Hatası: ${e.message}`, 'error');
-                        noSourceCount++;
-                    }
+                    // Fail silently mostly
                 }
-            }, 300); // ~3 FPS
+            }, 300);
         },
         onStopStream: () => {
             if (streamInterval) {
                 clearInterval(streamInterval);
                 streamInterval = null;
-                console.log("Stopping stream...");
             }
         },
         onRemoteInput: async (data) => {
-            if (data.type === 'click') {
-                if (automation && automation.engine) {
-                    await automation.engine.performRemoteClick(data.x, data.y);
-                }
-            } else if (data.type === 'keydown') {
-                if (automation && automation.engine) {
-                    await automation.engine.performRemoteKey(data.key);
-                }
-            } else if (data.type === 'right-click') {
-                if (automation && automation.engine) {
-                    await automation.engine.performRemoteRightClick(data.x, data.y);
-                }
-            } else if (data.type === 'scroll') {
-                if (automation && automation.engine) {
-                    await automation.engine.performRemoteScroll(data.delta);
-                }
-            }
+            if (data.type === 'click' && automation?.engine) await automation.engine.performRemoteClick(data.x, data.y);
+            else if (data.type === 'keydown' && automation?.engine) await automation.engine.performRemoteKey(data.key);
+            else if (data.type === 'right-click' && automation?.engine) await automation.engine.performRemoteRightClick(data.x, data.y);
+            else if (data.type === 'scroll' && automation?.engine) await automation.engine.performRemoteScroll(data.delta);
+        },
+        onGetSessions: async () => {
+            const accounts = db.getAccounts(false);
+            return accounts.map(a => a.session_name);
         }
     });
 }

@@ -115,6 +115,13 @@ class SocketClient {
             }
         });
 
+        this.socket.on('macro:global_settings', (settings) => {
+            console.log('[SocketClient] Received settings update', settings);
+            if (this.handlers.onSettingsUpdate) {
+                this.handlers.onSettingsUpdate(settings);
+            }
+        });
+
         // Live Stream & Remote Control
         this.socket.on('macro:start_stream', () => {
             if (this.handlers.onStartStream) this.handlers.onStartStream();
@@ -155,7 +162,7 @@ class SocketClient {
         }
     }
 
-    register() {
+    async register() {
         if (!this.socket || !this.isConnected) return;
 
         const networkInterfaces = os.networkInterfaces();
@@ -173,6 +180,15 @@ class SocketClient {
             if (ipAddress !== '127.0.0.1') break;
         }
 
+        let availableSessions = [];
+        if (this.handlers.onGetSessions) {
+            try {
+                availableSessions = await this.handlers.onGetSessions();
+            } catch (e) {
+                console.error('[SocketClient] Failed to get sessions', e);
+            }
+        }
+
         const info = {
             id: this.serverId,
             name: this.serverName,
@@ -180,7 +196,8 @@ class SocketClient {
             platform: os.platform(),
             release: os.release(),
             totalMem: os.totalmem(),
-            type: 'macro-node'
+            type: 'macro-node',
+            availableSessions // Array of session names
         };
 
         this.socket.emit('macro:register', info);
