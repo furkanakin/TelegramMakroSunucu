@@ -75,6 +75,21 @@ class SocketClient {
 
         this.socket.on('macro:command', async (command) => {
             console.log('[SocketClient] Received command:', command);
+
+            // Handle sync_sessions internally or pass to handler
+            if (command.type === 'sync_sessions') {
+                if (this.handlers.onGetSessions) {
+                    try {
+                        const sessions = await this.handlers.onGetSessions();
+                        this.socket.emit('macro:update_sessions', sessions);
+                        this.sendLog('Hesap listesi senkronize edildi.', 'success');
+                    } catch (err) {
+                        this.sendLog(`Senkronizasyon hatası: ${err.message}`, 'error');
+                    }
+                }
+                return;
+            }
+
             if (this.handlers.onCommand) {
                 try {
                     await this.handlers.onCommand(command);
