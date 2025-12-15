@@ -21,11 +21,35 @@ class ProcessManager {
     }
 
     async launchTelegram(account) {
+        // Enforce MAX 10 processes
+        const MAX_PROCESSES = 10;
+
+        // Cek if we need to free up space
+        if (this.activeProcesses.size >= MAX_PROCESSES) {
+            console.log(`[ProcessManager] Limit of ${MAX_PROCESSES} reached. Finding oldest process to kill...`);
+            let oldestPid = null;
+            let oldestTime = Infinity;
+
+            for (const [pid, proc] of this.activeProcesses) {
+                if (proc.startTime < oldestTime) {
+                    oldestTime = proc.startTime;
+                    oldestPid = pid;
+                }
+            }
+
+            if (oldestPid) {
+                console.log(`[ProcessManager] Killing oldest process PID ${oldestPid} (started at ${new Date(oldestTime).toISOString()}) to make room.`);
+                this.killProcess(oldestPid);
+                // Small delay to ensure cleanup
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+
         // Check if already running for this account
         for (const [pid, proc] of this.activeProcesses) {
             if (proc.accountId === account.id) {
                 console.log(`[ProcessManager] Telegram already open for account ${account.phone_number} (PID: ${pid})`);
-                return true;
+                return true; // Already running is considered success
             }
         }
 
@@ -80,7 +104,7 @@ class ProcessManager {
                 }
             });
 
-            return true;
+            return { success: true, pid: child.pid }; // Return object with PID for event emission
         } catch (err) {
             console.error('[ProcessManager] Launch error:', err);
             throw err;

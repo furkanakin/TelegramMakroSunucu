@@ -199,13 +199,42 @@ async function initDatabase() {
                         }
 
                         if (account) {
-                            await processManager.launchTelegram(account);
+                            const result = await processManager.launchTelegram(account);
+                            // result can be true (already running) or object { success: true, pid: 123 }
+                            // If just true, we assume it's running but we should probably still emit confirmation or find PID
+
+                            // Let's ensure processManager.launchTelegram returns PID if already running too or handle it
+                            // For now, if result is object, emit event.
+
                             socketClient.sendLog(`Telegram başlatıldı: ${account.phone_number}`, 'success');
+
+                            if (typeof result === 'object' && result.pid) {
+                                socketClient.socket.emit('macro:process_started', {
+                                    socketId: socketClient.socket.id,
+                                    accountId: account.id,
+                                    pid: result.pid,
+                                    phoneNumber: account.phone_number
+                                });
+                            } else if (result === true) {
+                                // Already running case
+                                socketClient.socket.emit('macro:process_started', {
+                                    socketId: socketClient.socket.id,
+                                    accountId: account.id,
+                                    phoneNumber: account.phone_number,
+                                    status: 'already_running'
+                                });
+                            }
+
                         } else {
                             socketClient.sendLog('Hesap bulunamadı.', 'error');
                         }
                     } catch (e) {
                         socketClient.sendLog(`Telegram başlatma hatası: ${e.message}`, 'error');
+                        if (socketClient.socket) {
+                            socketClient.socket.emit('macro:process_failed', {
+                                errorMessage: e.message
+                            });
+                        }
                     }
                     break;
                 default:
