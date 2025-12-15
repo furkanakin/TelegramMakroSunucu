@@ -290,7 +290,12 @@ async function initDatabase() {
             console.log('Retrieving sessions from DB...');
             try {
                 const accounts = db.getAccounts(false);
-                const sessions = accounts.map(a => a.session_name);
+                if (accounts.length > 0) {
+                    console.log('First account object keys:', Object.keys(accounts[0]));
+                    console.log('First account sample:', accounts[0]);
+                }
+                // Try to find the correct property
+                const sessions = accounts.map(a => a.session_file || a.session_name || a.phone_number);
                 console.log(`Found ${sessions.length} sessions.`);
                 if (sessions.length > 0) {
                     console.log('Sample VDS session names:', sessions.slice(0, 5));
