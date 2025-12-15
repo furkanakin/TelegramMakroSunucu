@@ -186,14 +186,15 @@ async function initDatabase() {
                     }
                     break;
                 case 'open_telegram':
+                    console.log('[VDS] Received open_telegram command:', JSON.stringify(command));
                     // command.accountId or command.phoneNumber
                     try {
                         let account = null;
-                        if (command.accountId) account = db.getAccountById(command.accountId); // Need to verify db has this method or similar
-                        else if (command.phoneNumber) account = db.getAccountByPhone(command.phoneNumber);
+                        if (command.accountId) account = db.getAccountById(command.accountId);
+                        if (!account && command.phoneNumber) account = db.getAccountByPhone(command.phoneNumber);
 
                         if (!account) {
-                            // Fallback: search in all accounts
+                            // Fallback: search in all accounts with loose equality
                             const accounts = db.getAccounts(false);
                             account = accounts.find(a => a.id == command.accountId || a.phone_number == command.phoneNumber);
                         }
