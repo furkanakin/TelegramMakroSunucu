@@ -196,6 +196,11 @@ class DatabaseManager {
         return this.getOne('SELECT * FROM accounts WHERE id = ?', [parseInt(id)]);
     }
 
+    getAccountByPhone(phoneNumber) {
+        if (!phoneNumber) return null;
+        return this.getOne('SELECT * FROM accounts WHERE phone_number = ?', [phoneNumber.toString().trim()]);
+    }
+
     updateAccountLastUsed(id) {
         return this.run("UPDATE accounts SET last_used = datetime('now') WHERE id = ?", [id]);
     }
