@@ -180,9 +180,9 @@ class ProcessManager {
 
                 // console.log(`[ProcessManager] Rotating focus to PID ${targetPid} (${this.currentRotationIndex + 1}/${pids.length})`);
 
-                // Restore and Bring to Front using User32 (handles minimized windows)
-                // SW_RESTORE = 9
-                const focusCmd = `powershell -command "$code = '[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow); [DllImport(\\"user32.dll\\")] public static extern bool SetForegroundWindow(IntPtr hWnd);'; $type = Add-Type -MemberDefinition $code -Name Win32ShowWindowAsync -Namespace Win32Functions -PassThru; $p = Get-Process -Id ${targetPid} -ErrorAction SilentlyContinue; if ($p) { $type::ShowWindowAsync($p.MainWindowHandle, 9); $type::SetForegroundWindow($p.MainWindowHandle) }"`;
+                // Restore and Maximize (Full Screen) and Bring to Front
+                // SW_MAXIMIZE = 3
+                const focusCmd = `powershell -command "$code = '[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow); [DllImport(\\"user32.dll\\")] public static extern bool SetForegroundWindow(IntPtr hWnd);'; $type = Add-Type -MemberDefinition $code -Name Win32ShowWindowAsync -Namespace Win32Functions -PassThru; $p = Get-Process -Id ${targetPid} -ErrorAction SilentlyContinue; if ($p) { $type::ShowWindowAsync($p.MainWindowHandle, 3); $type::SetForegroundWindow($p.MainWindowHandle) }"`;
                 exec(focusCmd);
             });
         } catch (e) {
