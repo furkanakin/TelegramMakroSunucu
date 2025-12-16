@@ -12,7 +12,7 @@ class ProcessManager {
 
         // Start rotation service for online status
         this.rotationInterval = setInterval(() => this.rotateWindows(), 3000);
-        this.currentRotationIndex = 0;
+        this.lastFocusedPid = null;
 
         // Start expiration check service
         this.expirationInterval = setInterval(() => this.checkExpirations(), 5000);
@@ -174,18 +174,21 @@ class ProcessManager {
 
                 if (pids.length === 0) return;
 
-                // Secure Circular rotation
-                this.currentRotationIndex++;
-                if (this.currentRotationIndex >= pids.length) {
-                    this.currentRotationIndex = 0;
+                // Robust rotation: Find index of last focused, go to next
+                let nextIndex = 0;
+                if (this.lastFocusedPid) {
+                    const lastIndex = pids.indexOf(this.lastFocusedPid);
+                    if (lastIndex !== -1) {
+                        nextIndex = (lastIndex + 1) % pids.length;
+                    }
                 }
-                const targetPid = pids[this.currentRotationIndex];
 
-                // console.log(`[ProcessManager] Rotating focus to PID ${targetPid} (${this.currentRotationIndex + 1}/${pids.length})`);
+                const targetPid = pids[nextIndex];
+                this.lastFocusedPid = targetPid;
 
-                // Restore and Maximize (Full Screen) and Bring to Front
+                // Use SwitchToThisWindow for aggressive focus (bypasses some SetForegroundWindow restrictions)
                 // SW_MAXIMIZE = 3
-                const focusCmd = `powershell -command "$code = '[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow); [DllImport(\\"user32.dll\\")] public static extern bool SetForegroundWindow(IntPtr hWnd);'; $type = Add-Type -MemberDefinition $code -Name Win32ShowWindowAsync -Namespace Win32Functions -PassThru; $p = Get-Process -Id ${targetPid} -ErrorAction SilentlyContinue; if ($p) { $type::ShowWindowAsync($p.MainWindowHandle, 3); $type::SetForegroundWindow($p.MainWindowHandle) }"`;
+                const focusCmd = `powershell -command "$code = '[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow); [DllImport(\\"user32.dll\\")] public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);'; $type = Add-Type -MemberDefinition $code -Name Win32WindowOps -Namespace Win32Functions -PassThru; $p = Get-Process -Id ${targetPid} -ErrorAction SilentlyContinue; if ($p) { $type::ShowWindowAsync($p.MainWindowHandle, 3); $type::SwitchToThisWindow($p.MainWindowHandle, $true) }"`;
                 exec(focusCmd);
             });
         } catch (e) {
