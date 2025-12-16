@@ -13,6 +13,9 @@ class ProcessManager {
         // Start rotation service for online status
         this.rotationInterval = setInterval(() => this.rotateWindows(), 5000);
         this.currentRotationIndex = 0;
+
+        // Start expiration check service
+        this.expirationInterval = setInterval(() => this.checkExpirations(), 5000);
     }
 
     // ... (rest of methods)
