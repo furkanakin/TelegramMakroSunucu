@@ -45,11 +45,15 @@ class ProcessManager {
             }
         }
 
-        // Check if already running for this account
+        // Check if already running for this account (check by PHONE NUMBER as IDs may vary)
         for (const [pid, proc] of this.activeProcesses) {
-            if (proc.accountId === account.id) {
+            if (proc.phoneNumber === account.phone_number) {
+                // Update ID if needed
+                proc.accountId = account.id;
                 console.log(`[ProcessManager] Telegram already open for account ${account.phone_number} (PID: ${pid})`);
-                return true; // Already running is considered success
+
+                // Return existing PID object so main.js can emit started event correctly
+                return { success: true, pid: pid };
             }
         }
 
