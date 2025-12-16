@@ -17,35 +17,7 @@ class ProcessManager {
 
     // ... (rest of methods)
 
-    // Cycle through all active Telegram windows to keep them 'Online'
-    async rotateWindows() {
-        try {
-            // Get all running Telegram PIDs dynamically from OS
-            // We verify against OS because our internal map might be stale due to updater restarts
-            exec('powershell -command "Get-Process Telegram -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id"', (err, stdout) => {
-                if (err || !stdout) return;
 
-                const pids = stdout.trim().split(/\s+/).map(p => parseInt(p)).filter(n => !isNaN(n));
-
-                if (pids.length === 0) return;
-
-                // Circular rotation
-                this.currentRotationIndex = (this.currentRotationIndex + 1) % pids.length;
-                const targetPid = pids[this.currentRotationIndex];
-
-                // Bring to front using WScript.Shell AppActivate
-                // This is lightweight and works for focusing windows
-                const focusCmd = `powershell -command "(New-Object -ComObject WScript.Shell).AppActivate(${targetPid})"`;
-                exec(focusCmd, (e) => {
-                    if (!e) {
-                        // console.log(`[ProcessManager] Rotated focus to PID ${targetPid}`);
-                    }
-                });
-            });
-        } catch (e) {
-            console.error('[ProcessManager] Rotation error:', e.message);
-        }
-    }
 
     updateSettings(newSettings) {
         if (newSettings.minDuration) this.settings.minDuration = newSettings.minDuration * 60 * 1000;
