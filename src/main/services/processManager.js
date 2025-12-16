@@ -53,6 +53,23 @@ class ProcessManager {
         console.log('[ProcessManager] Settings updated:', this.settings);
     }
 
+    async verifyProcessRunning(exePath) {
+        if (!exePath) return false;
+        const safePath = exePath.replace(/'/g, "''");
+        const psCommand = `powershell -command "Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -eq '${safePath}' } | Measure-Object | Select-Object -ExpandProperty Count"`;
+
+        return new Promise((resolve) => {
+            exec(psCommand, (err, stdout) => {
+                if (err || !stdout) {
+                    resolve(false);
+                    return;
+                }
+                const count = parseInt(stdout.trim());
+                resolve(count > 0);
+            });
+        });
+    }
+
     async launchTelegram(account) {
         // Enforce MAX 10 processes
         const MAX_PROCESSES = 10;
@@ -81,12 +98,20 @@ class ProcessManager {
         // Check if already running for this account (check by PHONE NUMBER as IDs may vary)
         for (const [pid, proc] of this.activeProcesses) {
             if (proc.phoneNumber === account.phone_number) {
-                // Update ID if needed
-                proc.accountId = account.id;
-                console.log(`[ProcessManager] Telegram already open for account ${account.phone_number} (PID: ${pid})`);
+                // Verify if it is ACTUALLY running
+                const isRunning = await this.verifyProcessRunning(proc.exePath);
 
-                // Return existing PID object so main.js can emit started event correctly
-                return { success: true, pid: pid };
+                if (isRunning) {
+                    // Update ID if needed
+                    proc.accountId = account.id;
+                    console.log(`[ProcessManager] Telegram already open for account ${account.phone_number} (PID: ${pid})`);
+
+                    // Return existing PID object so main.js can emit started event correctly
+                    return { success: true, pid: pid };
+                } else {
+                    console.log(`[ProcessManager] Stale process detected for ${account.phone_number} (PID: ${pid}). Removing and relaunching...`);
+                    this.activeProcesses.delete(pid);
+                }
             }
         }
 
