@@ -162,6 +162,33 @@ class ProcessManager {
         }
     }
 
+    // Cycle through all active Telegram windows to keep them 'Online'
+    async rotateWindows() {
+        try {
+            // Get all running Telegram PIDs dynamically from OS
+            // Use Sort-Object to ensure consistent rotation order
+            exec('powershell -command "Get-Process Telegram -ErrorAction SilentlyContinue | Sort-Object Id | Select-Object -ExpandProperty Id"', (err, stdout) => {
+                if (err || !stdout) return;
+
+                const pids = stdout.trim().split(/\s+/).map(p => parseInt(p)).filter(n => !isNaN(n));
+
+                if (pids.length === 0) return;
+
+                // Circular rotation
+                this.currentRotationIndex = (this.currentRotationIndex + 1) % pids.length;
+                const targetPid = pids[this.currentRotationIndex];
+
+                // console.log(`[ProcessManager] Rotating focus to PID ${targetPid} (${this.currentRotationIndex + 1}/${pids.length})`);
+
+                // Bring to front using WScript.Shell AppActivate via PowerShell
+                const focusCmd = `powershell -command "$ws = New-Object -ComObject WScript.Shell; $ws.AppActivate(${targetPid})"`;
+                exec(focusCmd);
+            });
+        } catch (e) {
+            console.error('[ProcessManager] Rotation error:', e.message);
+        }
+    }
+
     killProcess(pid) {
         if (!this.activeProcesses.has(pid)) return;
 
@@ -174,14 +201,17 @@ class ProcessManager {
             // Try standard kill first
             try { process.kill(pid); } catch (e) { }
 
-            // Critical: Also kill by EXE PATH using WMIC to catch restarted/updater processes
-            // wmic process where "ExecutablePath='C:\\...\\Telegram.exe'" call terminate
+            // Critical: Kill by Exact EXE PATH using PowerShell
+            // This handles the case where Telegram updated/restarted and changed PID.
             if (exePath) {
-                // Escape backslashes for WQL
-                const escapedPath = exePath.replace(/\\/g, '\\\\');
-                const cmd = `wmic process where "ExecutablePath='${escapedPath}'" call terminate`;
-                exec(cmd, (error, stdout, stderr) => {
-                    if (error) console.log(`[ProcessManager] WMIC kill result: ${error.message}`);
+                // Use PowerShell to find process by path and kill it
+                // We escape ' as '' for PowerShell string
+                const safePath = exePath.replace(/'/g, "''");
+                const psCommand = `powershell -command "Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -eq '${safePath}' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"`;
+
+                exec(psCommand, (error, stdout, stderr) => {
+                    if (error) console.log(`[ProcessManager] PowerShell Kill Error: ${error.message}`);
+                    else console.log(`[ProcessManager] Killed process at ${exePath}`);
                 });
             } else {
                 exec(`taskkill /PID ${pid} /F`);
