@@ -91,6 +91,7 @@ class ProcessManager {
                 accountId: account.id,
                 accountName: account.session_name,
                 phoneNumber: account.phone_number,
+                exePath: exePath, // Store path for reliable killing
                 startTime: Date.now(),
                 duration: duration,
                 process: child
@@ -131,10 +132,28 @@ class ProcessManager {
     killProcess(pid) {
         if (!this.activeProcesses.has(pid)) return;
 
+        const proc = this.activeProcesses.get(pid);
+        const { exePath } = proc;
+
         try {
-            process.kill(pid);
-            // Also try taskkill for force
-            exec(`taskkill /PID ${pid} /F`);
+            console.log(`[ProcessManager] Killing process PID ${pid} (Path: ${exePath})`);
+
+            // Try standard kill first
+            try { process.kill(pid); } catch (e) { }
+
+            // Critical: Also kill by EXE PATH using WMIC to catch restarted/updater processes
+            // wmic process where "ExecutablePath='C:\\...\\Telegram.exe'" call terminate
+            if (exePath) {
+                // Escape backslashes for WQL
+                const escapedPath = exePath.replace(/\\/g, '\\\\');
+                const cmd = `wmic process where "ExecutablePath='${escapedPath}'" call terminate`;
+                exec(cmd, (error, stdout, stderr) => {
+                    if (error) console.log(`[ProcessManager] WMIC kill result: ${error.message}`);
+                });
+            } else {
+                exec(`taskkill /PID ${pid} /F`);
+            }
+
         } catch (e) {
             console.error(`[ProcessManager] Error killing ${pid}:`, e.message);
         }
