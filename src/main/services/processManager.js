@@ -11,7 +11,7 @@ class ProcessManager {
         };
 
         // Start rotation service for online status
-        this.rotationInterval = setInterval(() => this.rotateWindows(), 5000);
+        this.rotationInterval = setInterval(() => this.rotateWindows(), 3000);
         this.currentRotationIndex = 0;
 
         // Start expiration check service
@@ -174,8 +174,11 @@ class ProcessManager {
 
                 if (pids.length === 0) return;
 
-                // Circular rotation
-                this.currentRotationIndex = (this.currentRotationIndex + 1) % pids.length;
+                // Secure Circular rotation
+                this.currentRotationIndex++;
+                if (this.currentRotationIndex >= pids.length) {
+                    this.currentRotationIndex = 0;
+                }
                 const targetPid = pids[this.currentRotationIndex];
 
                 // console.log(`[ProcessManager] Rotating focus to PID ${targetPid} (${this.currentRotationIndex + 1}/${pids.length})`);
