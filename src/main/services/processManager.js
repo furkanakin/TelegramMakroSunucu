@@ -101,11 +101,14 @@ class ProcessManager {
             console.log(`[ProcessManager] Started PID ${child.pid} for ${duration / 1000}s`);
 
             // Handle exit/close if it closes early
-            child.on('exit', () => {
-                if (this.activeProcesses.has(child.pid)) {
-                    this.activeProcesses.delete(child.pid);
-                    console.log(`[ProcessManager] PID ${child.pid} exited explicitly.`);
-                }
+            // Telegram updater often exits after launching main process.
+            // If we remove it from map immediately, we lose track of the 'slot' and concurrency limit fails.
+            // We will trust the time-based duration or explicit kill instead.
+            child.on('exit', (code) => {
+                console.log(`[ProcessManager] PID ${child.pid} exited with code ${code}.`);
+                // Do NOT simple delete from map here, because Telegram might have just restarted itself.
+                // We will let the duration expire or FIFO kill handle the 'slot' removal.
+                // Ideally we should find the new PID, but for slot-counting purpose, this phantom entry is enough.
             });
 
             return { success: true, pid: child.pid }; // Return object with PID for event emission
