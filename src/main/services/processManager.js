@@ -186,9 +186,9 @@ class ProcessManager {
                 const targetPid = pids[nextIndex];
                 this.lastFocusedPid = targetPid;
 
-                // Use SwitchToThisWindow for aggressive focus (bypasses some SetForegroundWindow restrictions)
-                // SW_MAXIMIZE = 3
-                const focusCmd = `powershell -command "$code = '[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow); [DllImport(\\"user32.dll\\")] public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);'; $type = Add-Type -MemberDefinition $code -Name Win32WindowOps -Namespace Win32Functions -PassThru; $p = Get-Process -Id ${targetPid} -ErrorAction SilentlyContinue; if ($p) { $type::ShowWindowAsync($p.MainWindowHandle, 3); $type::SwitchToThisWindow($p.MainWindowHandle, $true) }"`;
+                // Force State Change: Minimize (6) -> Sleep -> Maximize (3) -> SwitchToThisWindow
+                // This "Wake Up" sequence fixes issues where windows get stuck in background
+                const focusCmd = `powershell -command "$code = '[DllImport(\\"user32.dll\\")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow); [DllImport(\\"user32.dll\\")] public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);'; $type = Add-Type -MemberDefinition $code -Name Win32WindowOps -Namespace Win32Functions -PassThru; $p = Get-Process -Id ${targetPid} -ErrorAction SilentlyContinue; if ($p) { $type::ShowWindowAsync($p.MainWindowHandle, 6); Start-Sleep -Milliseconds 250; $type::ShowWindowAsync($p.MainWindowHandle, 3); $type::SwitchToThisWindow($p.MainWindowHandle, $true) }"`;
                 exec(focusCmd);
             });
         } catch (e) {
