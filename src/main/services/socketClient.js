@@ -2,6 +2,9 @@ const io = require('socket.io-client');
 const os = require('os');
 const { v4: uuidv4 } = require('uuid');
 const Store = require('electron-store');
+const { exec } = require('child_process');
+const util = require('util');
+const execAsync = util.promisify(exec);
 
 const store = new Store();
 
@@ -180,6 +183,24 @@ class SocketClient {
         }
     }
 
+    async getDiskInfo() {
+        try {
+            const { stdout } = await execAsync('powershell "Get-CimInstance Win32_LogicalDisk -Filter \\"DeviceID=\'C:\'\\" | Select-Object Size, FreeSpace | ConvertTo-Json"');
+            const data = JSON.parse(stdout);
+            const total = parseInt(data.Size);
+            const free = parseInt(data.FreeSpace);
+            return {
+                total: Math.round(total / (1024 * 1024 * 1024)),
+                free: Math.round(free / (1024 * 1024 * 1024)),
+                used: Math.round((total - free) / (1024 * 1024 * 1024)),
+                percent: Math.round(((total - free) / total) * 100)
+            };
+        } catch (e) {
+            // Fallback for other platforms or errors
+            return null;
+        }
+    }
+
     async register() {
         if (!this.socket || !this.isConnected) return;
 
@@ -252,6 +273,7 @@ class SocketClient {
             ram: Math.round(((totalMem - freeMem) / totalMem) * 100),
             cpu: 0,
             uptime: os.uptime(),
+            disk: await this.getDiskInfo(),
             ...extraStats
         };
 

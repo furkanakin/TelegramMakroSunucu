@@ -273,7 +273,8 @@ async function initDatabase() {
                     accounts: db.getAccounts(false),
                     channels: db.getChannels(false),
                     automationStatus: automation.getStatus(),
-                    activeProcesses: processManager ? processManager.getActiveProcesses() : []
+                    activeProcesses: processManager ? processManager.getActiveProcesses() : [],
+                    disk: await socketClient.getDiskInfo()
                 };
             } catch (e) {
                 return {};
