@@ -66,12 +66,37 @@
                 <div class="dashboard-grid">
                     <div class="card">
                         <div class="card-header">
+                            <h3>Pencere Döngüsü</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="rotation-control">
+                                <div class="rotation-info">
+                                    <p>Telegram pencerelerini 3 saniyede bir döndürür ve sol üst köşeye tıklayarak hesapları çevrimiçi tutar.</p>
+                                    <p class="help-text">Maksimum 10 hesap aynı anda açık olabilir.</p>
+                                </div>
+                                <div class="rotation-toggle">
+                                    <label class="toggle-switch large">
+                                        <input type="checkbox" id="rotation-enabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label" id="rotation-status">Devre Dışı</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
                             <h3>Sunucu Durumu</h3>
                         </div>
                         <div class="card-body">
                             <div class="info-item">
                                 <span class="label">Manager Bağlantısı:</span>
                                 <span class="value" id="connection-status">Bağlantı bekleniyor...</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Açık Telegram:</span>
+                                <span class="value" id="open-telegram-count">0</span>
                             </div>
                         </div>
                     </div>

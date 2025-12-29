@@ -10,12 +10,29 @@ class ProcessManager {
             maxDuration: 15 * 60 * 1000 // 15 min in ms
         };
 
-        // Start rotation service for online status
-        this.rotationInterval = setInterval(() => this.rotateWindows(), 3000);
+        // Rotation varsayılan olarak DEVRE DIŞI
+        this.rotationEnabled = false;
+        this.rotationInterval = null;
         this.lastFocusedPid = null;
 
         // Start expiration check service
         this.expirationInterval = setInterval(() => this.checkExpirations(), 5000);
+    }
+
+    setRotationEnabled(enabled) {
+        this.rotationEnabled = enabled;
+        console.log(`[ProcessManager] Rotation ${enabled ? 'ENABLED' : 'DISABLED'}`);
+
+        if (enabled && !this.rotationInterval) {
+            // Rotation'ı başlat
+            this.rotationInterval = setInterval(() => this.rotateWindows(), 3000);
+            console.log('[ProcessManager] Rotation interval started');
+        } else if (!enabled && this.rotationInterval) {
+            // Rotation'ı durdur
+            clearInterval(this.rotationInterval);
+            this.rotationInterval = null;
+            console.log('[ProcessManager] Rotation interval stopped');
+        }
     }
 
     // ... (rest of methods)
@@ -164,6 +181,9 @@ class ProcessManager {
 
     // Cycle through all active Telegram windows to keep them 'Online'
     async rotateWindows() {
+        // Rotation devre dışıysa hiçbir şey yapma
+        if (!this.rotationEnabled) return;
+
         try {
             // Get all running Telegram PIDs dynamically from OS
             // Use Sort-Object to ensure consistent rotation order

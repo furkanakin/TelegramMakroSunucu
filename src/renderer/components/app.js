@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
     initNavigation();
     initAccountsPage();
+    initRotationToggle();
     await loadInitialData();
     setupIpcListeners();
 });
@@ -125,6 +126,40 @@ function switchPage(pageName) {
         case 'settings':
             loadSettings();
             break;
+    }
+}
+
+// ============ ROTATION TOGGLE ============
+function initRotationToggle() {
+    const toggle = $('#rotation-enabled');
+    const statusLabel = $('#rotation-status');
+
+    if (!toggle) return;
+
+    // Varsayılan olarak deaktif
+    toggle.checked = false;
+    updateRotationStatus(false);
+
+    toggle.addEventListener('change', async () => {
+        const enabled = toggle.checked;
+        updateRotationStatus(enabled);
+
+        // Backend'e bildir
+        await ipcRenderer.invoke('set-rotation-enabled', enabled);
+
+        if (enabled) {
+            showSuccess('Pencere döngüsü aktif edildi');
+        } else {
+            showWarning('Pencere döngüsü devre dışı bırakıldı');
+        }
+    });
+}
+
+function updateRotationStatus(enabled) {
+    const statusLabel = $('#rotation-status');
+    if (statusLabel) {
+        statusLabel.textContent = enabled ? 'Aktif' : 'Devre Dışı';
+        statusLabel.style.color = enabled ? 'var(--accent-success)' : 'var(--text-muted)';
     }
 }
 
@@ -209,6 +244,16 @@ async function loadDashboard() {
                 connectionStatus.style.color = status.connected ? 'var(--accent-success)' : 'var(--accent-danger)';
             }).catch(() => {
                 connectionStatus.textContent = 'Bilinmiyor';
+            });
+        }
+
+        // Open Telegram count
+        const telegramCount = $('#open-telegram-count');
+        if (telegramCount) {
+            ipcRenderer.invoke('get-telegram-count').then(count => {
+                telegramCount.textContent = count || 0;
+            }).catch(() => {
+                telegramCount.textContent = '0';
             });
         }
 

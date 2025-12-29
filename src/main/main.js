@@ -369,3 +369,16 @@ ipcMain.handle('test-launch-telegram', async (event, exePath) => {
         return { success: false, error: error.message };
     }
 });
+
+// Pencere döngüsü kontrolü
+ipcMain.handle('set-rotation-enabled', (event, enabled) => {
+    if (processManager) {
+        processManager.setRotationEnabled(enabled);
+    }
+    return { success: true };
+});
+
+// Açık Telegram sayısı
+ipcMain.handle('get-telegram-count', () => {
+    return processManager ? processManager.getCount() : 0;
+});
