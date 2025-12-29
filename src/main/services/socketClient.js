@@ -287,6 +287,10 @@ class SocketClient {
         }
         this.stopHeartbeat();
     }
+
+    isConnected() {
+        return this.isConnected;
+    }
 }
 
 module.exports = new SocketClient();
