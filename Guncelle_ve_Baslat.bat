@@ -38,13 +38,23 @@ if "%LOCAL_REV%" neq "%REMOTE_REV%" (
 )
 
 :START_APP
+:: node_modules yoksa yukle
+if not exist "node_modules\" (
+    echo [!] node_modules bulunamadi, paketler yukleniyor...
+    call npm install
+)
+
 echo.
 echo [3/3] Telegram Macro Automation baslatiliyor...
 echo.
-npm start
+
+:: npm script yerine direkt electron cagirmak daha stabil olabilir
+:: ama npm start da 'call' ile calismali
+call npm start
 
 if %errorlevel% neq 0 (
     echo.
-    echo [!] Uygulama beklenmedik bir sekilde kapandi.
+    echo [!] Uygulama bir hata ile karsilasti veya kapandi.
+    echo [!] Hata kodu: %errorlevel%
     pause
 )
