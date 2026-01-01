@@ -20,7 +20,7 @@ class SocketClient {
         }
 
         this.serverName = os.hostname();
-        this.isConnected = false;
+        this.connected = false;
         this.heartbeatInterval = null;
         this.handlers = {};
 
@@ -78,14 +78,14 @@ class SocketClient {
 
         this.socket.on('connect', () => {
             console.log('[SocketClient] Connected to Manager');
-            this.isConnected = true;
+            this.connected = true;
             this.register();
             this.startHeartbeat();
         });
 
         this.socket.on('disconnect', () => {
             console.log('[SocketClient] Disconnected from Manager');
-            this.isConnected = false;
+            this.connected = false;
             this.stopHeartbeat();
         });
 
@@ -191,7 +191,7 @@ class SocketClient {
     }
 
     sendLog(message, type = 'info') {
-        if (this.socket && this.isConnected) {
+        if (this.socket && this.connected) {
             this.socket.emit('macro:log', {
                 serverId: this.serverId,
                 message,
@@ -202,7 +202,7 @@ class SocketClient {
     }
 
     sendStreamFrame(image) {
-        if (this.socket && this.isConnected) {
+        if (this.socket && this.connected) {
             this.socket.emit('macro:stream_frame', {
                 serverId: this.serverId,
                 image
@@ -229,7 +229,7 @@ class SocketClient {
     }
 
     async register() {
-        if (!this.socket || !this.isConnected) return;
+        if (!this.socket || !this.connected) return;
 
         const networkInterfaces = os.networkInterfaces();
         let ipAddress = '127.0.0.1';
@@ -284,7 +284,7 @@ class SocketClient {
     }
 
     async sendHeartbeat() {
-        if (!this.socket || !this.isConnected) return;
+        if (!this.socket || !this.connected) return;
 
         const freeMem = os.freemem();
         const totalMem = os.totalmem();
@@ -314,7 +314,7 @@ class SocketClient {
     }
 
     isConnected() {
-        return this.isConnected;
+        return this.connected;
     }
 }
 
