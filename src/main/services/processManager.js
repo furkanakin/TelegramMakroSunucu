@@ -252,9 +252,21 @@ class ProcessManager {
     }
 
     killAll() {
+        console.log('[ProcessManager] Killing all Telegram processes on system...');
+
+        // Kill by process name globally
+        exec('taskkill /F /IM Telegram.exe', (err) => {
+            if (err) console.log('[ProcessManager] Global kill (taskkill) info: No Telegram.exe processes were running or error occurred.');
+            else console.log('[ProcessManager] All Telegram.exe processes killed globally.');
+        });
+
+        // Stop rotation
+        this.setRotationEnabled(false);
+
         const pids = Array.from(this.activeProcesses.keys());
-        console.log(`[ProcessManager] Killing all ${pids.length} processes...`);
-        pids.forEach(pid => this.killProcess(pid));
+        console.log(`[ProcessManager] Clearing ${pids.length} tracked processes from map...`);
+        this.activeProcesses.clear();
+        this.lastFocusedPid = null;
     }
 
     getActiveProcesses() {

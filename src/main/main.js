@@ -110,6 +110,7 @@ async function initDatabase() {
                         }
                     }
                     break;
+                case 'kill_telegram':
                 case 'kill_all_telegram':
                     if (processManager) processManager.killAll();
                     socketClient.sendLog('Tüm Telegram süreçleri sonlandırıldı.', 'success');
