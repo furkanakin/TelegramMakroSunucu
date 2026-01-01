@@ -394,13 +394,15 @@ ipcMain.handle('get-telegram-count', () => {
  */
 async function cleanupFolders(validSessionNames) {
     const accounts = db.getAccounts(false);
-    const validSet = new Set(validSessionNames.map(n => n.toLowerCase()));
+    const validSet = new Set(validSessionNames.map(n => n.toString().trim().toLowerCase()));
     let deletedCount = 0;
 
     for (const account of accounts) {
-        const phone = account.phone_number.toString().toLowerCase();
-        // Eğer phone number validSet içinde yoksa sil
-        if (!validSet.has(phone)) {
+        const phone = account.phone_number.toString().trim().toLowerCase();
+        const phoneNoPlus = phone.startsWith('+') ? phone.substring(1) : phone;
+
+        // Hem tam haliyle hem de artı (+) işareti olmadan kontrol et
+        if (!validSet.has(phone) && !validSet.has(phoneNoPlus)) {
             console.log(`[VDS Cleanup] Deleting invalid account: ${account.phone_number}`);
 
             // Klasörü sil
