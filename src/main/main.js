@@ -2,6 +2,9 @@ const { app, BrowserWindow, ipcMain, dialog, screen } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+// VDS/VPS ortamlarında GPU hatalarını önlemek için donanım hızlandırmayı kapat
+app.disableHardwareAcceleration();
+
 // Veritabanı ve servis modülleri
 const DatabaseManager = require('../database/schema');
 const socketClient = require('./services/socketClient');
