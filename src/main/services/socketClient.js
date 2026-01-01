@@ -23,6 +23,33 @@ class SocketClient {
         this.isConnected = false;
         this.heartbeatInterval = null;
         this.handlers = {};
+
+        // CPU calculation helper
+        this.lastCpuStats = this.getCpuTimes();
+    }
+
+    getCpuTimes() {
+        const cpus = os.cpus();
+        let user = 0, nice = 0, sys = 0, idle = 0, irq = 0;
+        for (const cpu of cpus) {
+            user += cpu.times.user;
+            nice += cpu.times.nice;
+            sys += cpu.times.sys;
+            idle += cpu.times.idle;
+            irq += cpu.times.irq;
+        }
+        return { user, nice, sys, idle, irq, total: user + nice + sys + idle + irq };
+    }
+
+    calculateCpuUsage() {
+        const currentStats = this.getCpuTimes();
+        const diff = {
+            idle: currentStats.idle - this.lastCpuStats.idle,
+            total: currentStats.total - this.lastCpuStats.total
+        };
+        this.lastCpuStats = currentStats;
+        if (diff.total === 0) return 0;
+        return Math.round(100 * (1 - diff.idle / diff.total));
     }
 
     setHandlers(handlers) {
@@ -259,7 +286,6 @@ class SocketClient {
     async sendHeartbeat() {
         if (!this.socket || !this.isConnected) return;
 
-        const cpus = os.cpus();
         const freeMem = os.freemem();
         const totalMem = os.totalmem();
 
@@ -269,9 +295,8 @@ class SocketClient {
         }
 
         const stats = {
-            cpuUser: cpus[0].times.user,
             ram: Math.round(((totalMem - freeMem) / totalMem) * 100),
-            cpu: 0,
+            cpu: this.calculateCpuUsage(),
             uptime: os.uptime(),
             disk: await this.getDiskInfo(),
             ...extraStats

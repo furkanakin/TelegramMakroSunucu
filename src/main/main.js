@@ -118,6 +118,12 @@ async function initDatabase() {
                     const { exec } = require('child_process');
                     exec('powershell -Command "(New-Object -ComObject Shell.Application).MinimizeAll()"');
                     break;
+                case 'cleanup_vds_folders':
+                    console.log('[VDS] Received cleanup_vds_folders command');
+                    const validSessions = command.validSessions || [];
+                    const deletedCount = await cleanupFolders(validSessions);
+                    socketClient.sendLog(`Temizleme işlemi tamamlandı: ${deletedCount} adet geçersiz hesap klasörü silindi.`, 'success');
+                    break;
                 default:
                     console.log('Bilinmeyen komut:', command.type);
             }
@@ -382,3 +388,40 @@ ipcMain.handle('set-rotation-enabled', (event, enabled) => {
 ipcMain.handle('get-telegram-count', () => {
     return processManager ? processManager.getCount() : 0;
 });
+
+/**
+ * Valid listede olmayan hesap klasörlerini temizler
+ */
+async function cleanupFolders(validSessionNames) {
+    const accounts = db.getAccounts(false);
+    const validSet = new Set(validSessionNames.map(n => n.toLowerCase()));
+    let deletedCount = 0;
+
+    for (const account of accounts) {
+        const phone = account.phone_number.toString().toLowerCase();
+        // Eğer phone number validSet içinde yoksa sil
+        if (!validSet.has(phone)) {
+            console.log(`[VDS Cleanup] Deleting invalid account: ${account.phone_number}`);
+
+            // Klasörü sil
+            if (account.folder_path && fs.existsSync(account.folder_path)) {
+                try {
+                    // Node.js 14+ için rmSync
+                    if (fs.rmSync) {
+                        fs.rmSync(account.folder_path, { recursive: true, force: true });
+                    } else {
+                        // Geriye dönük uyumluluk
+                        fs.rmdirSync(account.folder_path, { recursive: true });
+                    }
+                } catch (e) {
+                    console.error(`Error deleting folder ${account.folder_path}:`, e.message);
+                }
+            }
+
+            // DB'den sil
+            db.deleteAccount(account.id);
+            deletedCount++;
+        }
+    }
+    return deletedCount;
+}
