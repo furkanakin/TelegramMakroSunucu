@@ -41,8 +41,9 @@ echo.
 echo [3/3] Telegram Macro Automation baslatiliyor...
 echo.
 
-:: Dogrudan npm run dev calistiriyoruz (En sondaki komut oldugu icin call gerekmez ve pencereyi mesgul etmez)
-npm run dev
+:: npm start kullanıyoruz (package.json içinde --dev sildik)
+:: 'call' kullanmıyoruz ki batch dosyası kendini bu işleme devretsin, fazladan pencere kalmasın
+npm start
 
 if %errorlevel% neq 0 (
     echo.
