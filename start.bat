@@ -1,3 +1,4 @@
 @echo off
-echo Telegram Macro Automation baslatiliyor...
-npm start
+title Telegram Macro Automation
+:: Guncellemeleri kontrol et ve baslat
+call Guncelle_ve_Baslat.bat
