@@ -4,7 +4,7 @@
   "description": "Telegram channel join automation with node-based workflow editor",
   "main": "src/main/main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron . --dev",
     "dev": "electron . --dev"
   },
   "author": "",

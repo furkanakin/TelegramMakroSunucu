@@ -48,9 +48,8 @@ echo.
 echo [3/3] Telegram Macro Automation baslatiliyor...
 echo.
 
-:: npm script yerine direkt electron cagirmak daha stabil olabilir
-:: ama npm start da 'call' ile calismali
-call npm start
+:: start-dev.bat calistigi icin burayi da dev moduna cekiyoruz
+call npm run dev
 
 if %errorlevel% neq 0 (
     echo.
