@@ -24,11 +24,20 @@ for /f "tokens=*" %%a in ('git rev-parse origin/main') do set REMOTE_REV=%%a
 if "%LOCAL_REV%" neq "%REMOTE_REV%" (
     echo [!] Yeni guncelleme bulundu! Kodlar yenileniyor...
     git reset --hard origin/main
+    git clean -fd
     
     echo [2/3] Paketler guncelleniyor...
     call npm install
 ) else (
-    echo [OK] Yazilim guncel.
+    :: Versiyonlar ayni olsa bile dosya eksikligini veya degisikligini kontrol et
+    git status --porcelain | findstr /v "data" | findstr /R "^" >nul
+    if %errorlevel% equ 0 (
+        echo [!] Yerel dosyalar eksik veya degismis. Repo ile esitleniyor...
+        git reset --hard origin/main
+        git clean -fd
+    ) else (
+        echo [OK] Yazilim guncel ve tam.
+    )
 )
 
 :START_APP

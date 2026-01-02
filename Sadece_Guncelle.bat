@@ -3,6 +3,7 @@ title Telegram Macro Sadece Guncelle
 echo [1/2] Guncellemeler kontrol ediliyor...
 git fetch origin main
 git reset --hard origin/main
+git clean -fd
 echo.
 echo Mevcut Versiyon:
 git log -1 --pretty=format:"%%h - %%s (%%cr)"
