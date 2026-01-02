@@ -1,5 +1,6 @@
 @echo off
 title Telegram Macro Update & Start
+cd /d %~dp0
 
 echo.
 echo ===========================================
@@ -10,7 +11,13 @@ echo.
 :: Git kontrolu
 where git >nul 2>nul
 if %errorlevel% neq 0 (
-    echo [!] Git bulunamadi, guncelleme atlaniyor...
+    echo.
+    echo [HATA] Git sisteminizde kurulu degil!
+    echo Otomatik guncelleme icin Git gereklidir.
+    echo Lutfen indirin ve kurun: https://git-scm.com/download/win
+    echo.
+    echo Guncelleme atlanarak uygulama baslatilacak...
+    timeout /t 5
     goto :START_APP
 )
 
