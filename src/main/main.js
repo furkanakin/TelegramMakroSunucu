@@ -195,7 +195,23 @@ async function initDatabase() {
             }
         },
         onRemoteInput: async (data) => {
-            // Remote input handling if needed
+            const { type, x, y, key, delta } = data;
+            const { spawn } = require('child_process');
+            const path = require('path');
+
+            let processedData = { type, x, y, key, delta };
+
+            // Koordinatları ekran çözünürlüğüne çevir (0-1 arası normalleştirilmiş gelir)
+            if (x !== undefined && y !== undefined) {
+                const primaryDisplay = screen.getPrimaryDisplay();
+                const { width, height } = primaryDisplay.size;
+                processedData.x = Math.round(x * width);
+                processedData.y = Math.round(y * height);
+            }
+
+            const scriptPath = path.join(__dirname, 'services', 'input_control.py');
+            // Python scriptini çalıştırarak eylemi gerçekleştir
+            spawn('python', [scriptPath, JSON.stringify(processedData)]);
         },
         onGetSessions: async () => {
             console.log('Retrieving sessions from DB...');
