@@ -2,8 +2,13 @@ const { app, BrowserWindow, ipcMain, dialog, screen } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-// VDS/VPS ortamlarında GPU hatalarını önlemek için donanım hızlandırmayı kapat
+// VDS/VPS ortamlarında GPU ve Ekran Yakalama hatalarını önlemek için ayarlar
 app.disableHardwareAcceleration();
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('disable-gpu-compositing');
+app.commandLine.appendSwitch('disable-features', 'WebRtcDirectReading');
+app.commandLine.appendSwitch('force-cpu-draw');
 
 // Veritabanı ve servis modülleri
 const DatabaseManager = require('../database/schema');
@@ -169,6 +174,7 @@ async function initDatabase() {
                 }
                 return null;
             } catch (e) {
+                socketClient.sendLog(`Ekran görüntüsü yakalama hatası: ${e.message}`, 'error');
                 return null;
             }
         },
@@ -184,7 +190,8 @@ async function initDatabase() {
                         socketClient.sendStreamFrame(b64);
                     }
                 } catch (e) {
-                    // Fail silently
+                    // console.error('[VDS] Stream capture error:', e.message);
+                    // Sık log birikmemesi için sadece kritik hataları basabiliriz
                 }
             }, 300);
         },
