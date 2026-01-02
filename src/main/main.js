@@ -210,8 +210,41 @@ async function initDatabase() {
             }
 
             const scriptPath = path.join(__dirname, 'services', 'input_control.py');
-            // Python scriptini çalıştırarak eylemi gerçekleştir
-            spawn('python', [scriptPath, JSON.stringify(processedData)]);
+            const payload = JSON.stringify(processedData);
+
+            // Execute using python or py as fallback
+            const tryExecute = (cmd) => {
+                return new Promise((resolve, reject) => {
+                    const pyProc = spawn(cmd, [scriptPath, payload]);
+
+                    let errorOutput = '';
+                    pyProc.stderr.on('data', (data) => {
+                        errorOutput += data.toString();
+                    });
+
+                    pyProc.on('error', (err) => {
+                        reject(err);
+                    });
+
+                    pyProc.on('close', (code) => {
+                        if (code === 0) resolve();
+                        else reject(new Error(`Exit code ${code}: ${errorOutput}`));
+                    });
+                });
+            };
+
+            try {
+                // console.log(`[VDS] Executing remote input: ${type}`);
+                await tryExecute('python');
+            } catch (err) {
+                // If python fails, try 'py'
+                try {
+                    await tryExecute('py');
+                } catch (err2) {
+                    console.error('[VDS] Remote input error:', err2.message);
+                    socketClient.sendLog(`Canlı kontrol hatası (${type}): Python bulunamadı veya hata oluştu.`, 'error');
+                }
+            }
         },
         onGetSessions: async () => {
             console.log('Retrieving sessions from DB...');
